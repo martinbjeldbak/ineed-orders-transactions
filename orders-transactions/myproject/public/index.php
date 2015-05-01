@@ -36,18 +36,6 @@ $app->configureMode('development', function () use ($app) {
         //$minifier = new MatthiasMullie\Minify\JS('js/application.js');
         //$minifier->minify('js/application.minified.js');
     });
-
-    // Set the configs for development environment
-    $app->config(array(
-        'debug' => true,
-        'database' => array(
-            'db_host' => 'localhost',
-            'db_port' => '',
-            'db_name' => 'mini',
-            'db_user' => 'root',
-            'db_pass' => '12345678'
-        )
-    ));
 });
 
 /******************************************** THE MODEL ********************************************************/
