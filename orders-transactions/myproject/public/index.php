@@ -61,8 +61,12 @@ $app->get('/subpage/deeper', function () use ($app) {
 });
 
 $app->group('/members', function() use ($app, $model) {
-   $app->get('/', function() use ($app, $model) {
+   
+   // GET request on /members
+    $app->get('/', function() use ($app, $model) {
         $members = $model->getAllMembers();
+        
+        //$m = $model->getMember(end(array_values($members)).id);
 
         $app->render('members.twig', array(
             'members' => $members

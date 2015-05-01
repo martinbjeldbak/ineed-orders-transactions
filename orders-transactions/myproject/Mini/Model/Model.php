@@ -5,12 +5,6 @@ namespace Mini\Model;
 require '../vendor/autoload.php';
 
 class Model {
-    /**
-     * The database connection
-     * @var PDO
-     */
-	private $db;
-
     function __construct()
     {   
         // Instantiate http client
@@ -21,5 +15,11 @@ class Model {
         $members = $this->httpClient->get('https://ineed-db.mybluemix.net/api/members');
         
         return $members->json();
+    }
+    
+    public function getMember($id) {
+        $member = $this->httpClient->get("https://ineed-db.mybluemix.net/api/members/{$id}");
+        
+        return $member->json();
     }
 }
