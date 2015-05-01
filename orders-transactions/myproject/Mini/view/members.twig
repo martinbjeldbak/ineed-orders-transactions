@@ -10,7 +10,11 @@
             {% for member in members %}
                 <tr>
                     <td>{{ member.firstName }} {{ member.lastName }}</td>
-                    <td>{{ implode(',', member.preferences) }}</td>
+                    <td>
+                    {% for pref in member.preferences %}
+                        {{ pref }}
+                    {% endfor %}
+                    </td>
                     <td>{{ member.email }}</td>
                     <td>{{ member.mobileNumber }}</td>
                     <td>{{ member._id }}</td>
