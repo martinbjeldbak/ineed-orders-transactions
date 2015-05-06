@@ -11,7 +11,7 @@ require 'vendor/autoload.php';
 
 $client = new GuzzleHttp\Client();
 
-$response = $client->get('https://ineed-db.mybluemix.net/api/items');
+$res = $client->get('https://ineed-db.mybluemix.net/api/items');
 
 echo $res->json();
 
