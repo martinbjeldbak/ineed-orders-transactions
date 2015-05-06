@@ -1,8 +1,8 @@
 <?php 
 include 'JSONObject.php';
 
-class Order extends JSONObject {
-	//add Order functions
+class Transaction extends JSONObject {
+	//add Transaction functions
 }
 	
 
