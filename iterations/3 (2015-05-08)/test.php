@@ -1,4 +1,10 @@
+<html>
+<body>
+
+<h1>Welcome to a test!</h1>
+
 <?php 
+include 'JSONObject.php';
 include 'Order.php';
 include 'Transaction.php';
 
@@ -24,9 +30,18 @@ $transactionData = array(
 );
 $transactionJsonString = json_encode($transactionData);
 	
+function print_r2($val){
+        echo '<pre>';
+        print_r($val);
+        echo '</pre>';
+}
+
 $order = new Order($orderJsonString);
-print_r($order);
+print_r2($order);
 
 $transaction = new transaction($transactionJsonString);
-print_r($transaction);
+print_r2($transaction);
 ?>
+
+</body>
+</html>
