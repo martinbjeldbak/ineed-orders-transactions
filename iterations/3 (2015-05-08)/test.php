@@ -7,6 +7,13 @@
 include 'JSONObject.php';
 include 'Order.php';
 include 'Transaction.php';
+require 'vendor/autoload.php';
+
+$client = new GuzzleHttp\Client();
+
+$response = $client->get('https://ineed-db.mybluemix.net/api/items');
+
+echo $res->json();
 
 // test data, replace with GETs to DB
 $orderData = array(
