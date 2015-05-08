@@ -1,9 +1,11 @@
-<?php
-include __DIR__.'/../utils/Team10DB.php';
-include __DIR__.'/iDBModel.php';
+<?php namespace iNeed;
+
+include __DIR__ . '/../utils/Team10DB.php';
+include 'iDBModel.php';
 
 class Order implements iDBModel {
-    private $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount;
+    public $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount;
+    public $committed = false;
 
     /**
      * Creates a new order object from the given parameters, but does not commit it to the db.

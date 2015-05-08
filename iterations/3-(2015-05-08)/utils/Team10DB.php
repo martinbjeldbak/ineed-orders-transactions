@@ -1,4 +1,6 @@
-<?php
+<?php namespace iNeed;
+
+use GuzzleHttp\Client;
 
 include __DIR__ .'/../vendor/autoload.php';
 
@@ -11,7 +13,7 @@ class Team10DB {
         if(self::$initialized)
             return;
 
-        self::$client = new GuzzleHttp\Client();
+        self::$client = new Client();
     }
 
 

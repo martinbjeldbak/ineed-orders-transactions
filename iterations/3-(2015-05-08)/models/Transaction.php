@@ -1,6 +1,7 @@
 <?php namespace iNeed;
 
 require __DIR__ . '/../vendor/autoload.php';
+include __DIR__ . '/../utils/Team10DB.php';
 
 class Transaction implements iDBModel {
     private $order, $itemID, $quantity, $unitPrice, $vendorID, $dealID, $dealDiscount;

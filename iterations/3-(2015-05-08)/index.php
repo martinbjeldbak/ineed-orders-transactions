@@ -1,7 +1,8 @@
 <?php
-include "models/Order.php";
 
-$order = new Order("stripe", "554856821c604e280078b62d", 20.0, 0.15, "554c2c91edb4672b00556203", 0.8);
+include 'models/Order.php';
+
+$order = new iNeed\Order("stripe", "554856821c604e280078b62d", 20.0, 0.15, "554c2c91edb4672b00556203", 0.8);
 
 $order->commit();
 ?>
