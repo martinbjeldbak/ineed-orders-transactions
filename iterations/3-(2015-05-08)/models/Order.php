@@ -1,8 +1,8 @@
 <?php
+include __DIR__.'/../utils/Team10DB.php';
+include __DIR__.'/iDBModel.php';
 
-require __DIR__ . '../vendor/autoload.php';
-
-class Order {
+class Order implements iDBModel {
     private $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount;
 
     /**
@@ -16,8 +16,6 @@ class Order {
      * @param $dealDiscount Float how much of a discount to apply, between 0.00 - 1.00
      */
     function __construct($paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount) {
-        $this->client = new GuzzleHttp\Client();
-
         $this->paymentType = $paymentType;
         $this->vendorId = $vendorId;
         $this->total = $total;
@@ -26,24 +24,15 @@ class Order {
         $this->dealDiscount = $dealDiscount;
     }
 
-
-    /**
-     * Commits this object to Team 10's database.
-     *
-     * Returns a GuzzleHttp ResponseInterface that has information about the POST request.
-     */
     function commit() {
-        $res = $this->client->post("https://ineed-db.mybluemix.net/api/orders", [
-            'json' => [
-                'paymentType' => $this->paymentType,
-                'vendorId' => $this->vendorId,
-                'total' => $this->total,
-                'tax' => $this->tax,
-                'dealId' => $this->dealId,
-                'dealDiscount' => $this->dealDiscount
-            ]
+        return Team10DB::post("orders", [
+            'paymentType' => $this->paymentType,
+            'vendorId' => $this->vendorId,
+            'total' => $this->total,
+            'tax' => $this->tax,
+            'dealId' => $this->dealId,
+            'dealDiscount' => $this->dealDiscount
         ]);
-        return $res;
     }
 
 
