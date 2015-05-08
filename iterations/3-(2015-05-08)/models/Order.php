@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '../vendor/autoload.php';
 
 class Order {
     private $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount;
