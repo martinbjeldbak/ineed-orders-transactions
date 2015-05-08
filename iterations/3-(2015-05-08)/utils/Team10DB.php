@@ -1,6 +1,6 @@
 <?php namespace iNeed;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Message\ResponseInterface;
 
 include __DIR__ .'/../vendor/autoload.php';
 
@@ -13,14 +13,21 @@ class Team10DB {
         if(self::$initialized)
             return;
 
-        self::$client = new Client();
+        self::$client = new \GuzzleHttp\Client();
     }
 
 
-    static function post($path, $data) {
+    /**
+     * Makes a POST request to Team 10's database endpoint.
+     *
+     * @param $paths String Relative path (appended to https://ineed-db.mybluemix.net/api/)
+     * @param $data Array of data to be sent
+     * @return ResponseInterface with data
+     */
+    static function post($paths, $data) {
         self::intialize();
 
-        $res = self::$client->post(self::$root . $path, [
+        $res = self::$client->post(self::$root . $paths, [
             'json' => $data
         ]);
 

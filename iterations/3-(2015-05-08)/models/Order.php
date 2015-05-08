@@ -2,10 +2,11 @@
 
 include __DIR__ . '/../utils/Team10DB.php';
 include 'iDBModel.php';
+use GuzzleHttp\Message\ResponseInterface;
 
 class Order implements iDBModel {
-    public $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount;
-    public $committed = false;
+    public $paymentType, $vendorId, $total, $tax, $dealId, $dealDiscount, $ID = "";
+    private $committed = false;
 
     /**
      * Creates a new order object from the given parameters, but does not commit it to the db.
@@ -26,8 +27,31 @@ class Order implements iDBModel {
         $this->dealDiscount = $dealDiscount;
     }
 
+    function hasCommitted() {
+        return $this->committed;
+    }
+
+    /**
+     * Gets the ID of this instance. Empty string if it is not instantiated
+     * @return String the unique object ID of this instance
+     *
+     */
+    function getID() {
+        return $this->ID;
+    }
+
+    /**
+     * Commits this object to Team 10's database.
+     *
+     * Returns a GuzzleHttp ResponseInterface that has information about the POST request.
+     * @return String id of this newly created object
+     */
     function commit() {
-        return Team10DB::post("orders", [
+        // This instance has already ommited.. do not recommit it to the DB
+        if($this->committed == true)
+            return -1;
+
+        $res = Team10DB::post("orders", [
             'paymentType' => $this->paymentType,
             'vendorId' => $this->vendorId,
             'total' => $this->total,
@@ -35,6 +59,10 @@ class Order implements iDBModel {
             'dealId' => $this->dealId,
             'dealDiscount' => $this->dealDiscount
         ]);
+
+        $this->committed = true;
+        $this->ID = $res->json()['_id'];
+        return $this->ID;
     }
 
 

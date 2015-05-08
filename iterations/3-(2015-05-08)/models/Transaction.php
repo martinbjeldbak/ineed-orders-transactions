@@ -1,11 +1,13 @@
 <?php namespace iNeed;
 
+use GuzzleHttp\Message\ResponseInterface;
+
 require __DIR__ . '/../vendor/autoload.php';
 include __DIR__ . '/../utils/Team10DB.php';
 
 class Transaction implements iDBModel {
     private $order, $itemID, $quantity, $unitPrice, $vendorID, $dealID, $dealDiscount;
-    public $committed = false;
+    private $committed = false;
 
     /**
      *
@@ -32,9 +34,27 @@ class Transaction implements iDBModel {
     }
 
 
+    /**
+     * Commits this object to Team 10's database.
+     *
+     * Returns a GuzzleHttp ResponseInterface that has information about the POST request.
+     * @return ResponseInterface object
+     */
     function commit() {
-        return Team10DB::post('transactions', [
+        if($this->committed == true)
+            return -1;
 
+        $res = Team10DB::post('transactions', [
+            // TODO: Put params here
         ]);
+
+        $this->committed = true;
+
+        return $res;
+    }
+
+    public function hasCommitted()
+    {
+        return $this->committed;
     }
 }

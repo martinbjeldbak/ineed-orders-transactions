@@ -2,9 +2,9 @@
 
 include 'models/Order.php';
 
-$order = new iNeed\Order("stripe", "554856821c604e280078b62d", 20.0, 0.15, "554c2c91edb4672b00556203", 0.8);
+$orders = new iNeed\Order("stripe", "554856821c604e280078b62d", 20.0, 0.16, "554c2c91edb4672b00556203", 0.8);
 
-$order->commit();
+$id = $orders->commit();
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +51,9 @@ $order->commit();
 	</head>
 
 	<body>
+    <?php
+    echo $id;
+    ?>
     <pre>
     </pre>
 		
