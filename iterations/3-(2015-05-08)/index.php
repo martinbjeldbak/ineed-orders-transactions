@@ -1,3 +1,11 @@
+<?php
+include "Order.php";
+
+$order = new Order("stripe", "554856821c604e280078b62d", 20.0, 0.15, "554c2c91edb4672b00556203", 0.0);
+
+$order->commit();
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -6,10 +14,44 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="assets/css/custom.css"/>		
+		<link rel="stylesheet" type="text/css" href="assets/css/custom.css"/>	
+		<script type="text/javascript">
+			function displayTransaction(quantity, itemName, vendor, price) {
+				var orderCart = document.getElementById(""); //TODO
+				var transaction = document.createElement("li");
+				transaction.className = "cart-row row";
+				var quantityEntry = document.createElement("span");
+				quantityEntry.className = "quantity";
+				var itemNameEntry = document.createElement("span");
+				itemNameEntry.className = "itemName";
+				var vendorEntry = document.createElement("span");
+				vendorEntry.className = "vendor";
+				var priceEntry = document.createElement("span");
+				priceEntry.className = "price";
+				// popup Edit/delete
+				var popBtn = document.createElement("span");
+				popBtn.className = "popbtn";
+				var arrow = document.createElement("a");
+				arrow.className = "arrow";
+				popBtn.appendChild(arrow);
+				
+				quantityEntry.innerHTML = quantity;
+				itemNameEntry.innerHTML = itemName;
+				vendorEntry.innerHTML = vendor;
+				priceEntry.innerHTML = price;
+				transaction.appendChild(quantityEntry);
+				transaction.appendChild(itemNameEntry);
+				transaction.appendChild(vendorEntry);
+				transaction.appendChild(popBtn);
+				transaction.appendChild(priceEntry);
+				//orderCart needs to append transaction
+			}
+		</script>	
 	</head>
 
 	<body>
+    <pre>
+    </pre>
 		
 		<nav class="navbar">
 			<div class="container">
@@ -34,13 +76,14 @@
 				<div class="bigcart"></div>
 				<h1>Your Product List</h1>
 				<p>
-					<li><a href="#" class="itemName">Double Double</a></li>
-					<li><a href="#" class="itemName">Hamburger</a></li>
-<!--					<li><a href="#">Product 2</a></li>
-					<li><a href="#">Product 3</a></li>
-					<li><a href="#">Product 4</a></li>
-This is a free and <b><a href="http://tutorialzine.com/2014/04/responsive-shopping-cart-layout-twitter-bootstrap-3/" title="Read the article!">responsive shopping cart layout, made by Tutorialzine</a></b>. It looks nice on both desktop and mobile browsers. Try it by resizing your window (or opening it on your smartphone and pc).
--->				</p>
+                    <!--
+                        <li><a href="#" class="itemName">Double Double</a></li>
+                        <li><a href="#" class="itemName">Hamburger</a></li>
+                        <li><a href="#">Product 2</a></li>
+                        <li><a href="#">Product 3</a></li>
+                        <li><a href="#">Product 4</a></li>
+    This is a free and <b><a href="http://tutorialzine.com/2014/04/responsive-shopping-cart-layout-twitter-bootstrap-3/" title="Read the article!">responsive shopping cart layout, made by Tutorialzine</a></b>. It looks nice on both desktop and mobile browsers. Try it by resizing your window (or opening it on your smartphone and pc).
+    -->				</p>
 			</div>
 			
 			<div class="col-md-7 col-sm-12 text-left">
