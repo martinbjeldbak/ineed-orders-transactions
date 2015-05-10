@@ -10,7 +10,7 @@ include_once("config.php");
 <link href="style/style.css" rel="stylesheet" type="text/css"></head>
 <body>
 <div id="products-wrapper">
- <h1>View Cart - TAKE PICKUP LOCATION</h1>
+ <h1>View Cart</h1>
  <div class="view-cart">
  	<?php
     $current_url = base64_encode($url="http://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
