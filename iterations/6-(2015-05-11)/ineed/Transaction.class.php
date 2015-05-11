@@ -2,7 +2,7 @@
 
 class Transaction {
 	private $transactionNo;	
-      	private $state;
+    private $state;
 	private $productId;
 	private $unitPrice;
 	private $quantity;
@@ -11,9 +11,8 @@ class Transaction {
 	private $image;
 	private $member;
 	
-     	public function __construct($transactionNo, $member,$vendor,$productId,$quantity,$mediator,$unitPrice,$image){
+     	public function __construct($transactionNo, $member,$vendor,$productId,$quantity,$mediator,$unitPrice, $image){
 		$this->transactionNo = $transactionNo;
-		$this -> state = $this -> mediator -> createTransactionState ($this);
 		$this -> productId = $productId;		
 		$this -> unitPrice = $unitPrice;
 		$this -> quantity = $quantity ;
@@ -22,7 +21,7 @@ class Transaction {
 		$this -> image = $image;			
 		$this->mediator = $mediator;
                 $this -> mediator->registerTransaction($this);
-
+        $this -> state = $this -> mediator -> createTransactionState ($this);
 	}		
 	
 		

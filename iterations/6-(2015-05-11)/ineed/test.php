@@ -13,4 +13,3 @@ $order = array (
 				)
 			);
 print_r($order);
-error_log(date("l"));
