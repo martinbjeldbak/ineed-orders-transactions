@@ -152,6 +152,7 @@ function postData($data,$url){
  
 	$result = curl_exec($ch);
 	error_log("result from DB ".print_r($result,true));
+    return json_decode($result, true);
 }
 
 function addTransactionToDB ($transaction, $order)
@@ -175,7 +176,8 @@ function addOrderToDB ($order , $orderNo){
          'tax' => $order->getTax(), 'dealId'=> $dealId, 'dealDiscount' => $dealDiscount);
         }
 	$url = 'https://ineed-db.mybluemix.net/api/orders';
-	postData($data,$url);
+	$response = postData($data,$url);
+    return $response['_id'];
 }
 
 function addOrderStateToDB($order){
