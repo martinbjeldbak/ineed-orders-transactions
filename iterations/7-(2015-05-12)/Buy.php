@@ -85,7 +85,6 @@ function createOrderObject ( $orderDetails,$mediator)
 {
 	
 	$total = 0;
-	$orderNo = createOrderNo();
 	$memberId = $orderDetails[MEMBER_ID];
 	$vendorId = $orderDetails[VENDOR_ID];
 	$vendorLink = $orderDetails[VENDOR_LINK];
@@ -93,22 +92,16 @@ function createOrderObject ( $orderDetails,$mediator)
 	$pickUpLocation = $orderDetails[PICKUP_LOCATION];
 	$orderPlacedDate = $orderDetails[ORDER_PLACED_DATE];	
 	$deal = null;
-	$order = new Order($orderNo,$memberId,$vendorId,$mediator,$vendorLink,$pickUpLocation,$orderPlacedDate,$deal,$image);
-	addOrderToDB($order,$orderNo);
-	addOrderStateToDB($order);
+	$order = new Order($memberId,$vendorId,$mediator,$vendorLink,$pickUpLocation,$orderPlacedDate,$deal,$image);
+	$order_id = addOrderToDB($order);
+    $order->setOrderNo($order_id);
+	addOrderStateToDB($order); // TODO: void method, fill this in with "created" status
 	return $order;
 }
 
 
 function getVendorLink(){
 	return "google.com";
-}
-function getVendorId(){
-	return "553dd674641ddfd849dae1ea";
-}
-
-function createOrderNo(){
-	return "55465be1aa2b104525207007";
 }
 
 function getImage(){
@@ -124,19 +117,12 @@ function createTransactionObject ($transactionDetails,$order,$mediator){
 		$quantity = $transactionDetail[QUANTITY];
 		$productId = $transactionDetail[PRODUCT_ID];
 		$unitPrice = $transactionDetail[UNIT_PRICE];			
-		$transaction = new Transaction(createTransactionNo(),$memberId,$vendorId,$productId,$quantity,$mediator,$unitPrice,$image);
-	      addTransactionToDB($transaction,$order);		
-        } 	  
+		$transaction = new Transaction($memberId,$vendorId,$productId,$quantity,$mediator,$unitPrice,$image);
+	      $transaction_id = addTransactionToDB($transaction,$order);
+        $transaction->setTransactionNo($transaction_id);
+    }
 }
 
-function createTransactionNo(){
-	return 1;
-}
-
-
-function getDealId(){
-	return "554691e79ce4b62800d324fc";
-}
 function postData($data,$url){ 
 	$data_string = json_encode($data);                                                                                   
 	error_log("data string ********* ".print_r($data_string,true)); 
@@ -159,10 +145,11 @@ function addTransactionToDB ($transaction, $order)
 {
 	$data = array("orderId" => $order->getOrderNo(), "itemId"=> $transaction->getProductId(), "quantity" => $transaction->getQuantity(), "unitPrice" => $transaction->getUnitPrice(), "vendorId" => $transaction->getVendor() );
 	$url = 'https://ineed-db.mybluemix.net/api/transactions';
-	postData($data,$url);	
+	$trans = postData($data,$url);
+    return $trans['_id'];
 }
 
-function addOrderToDB ($order , $orderNo){
+function addOrderToDB ($order){
 	if($order->getDeal() == null)
         { 
                 $data =  array('paymentType' => 'credit', 'vendorId' => $order->getVendor(), 'total' => $order->getTotal() ,

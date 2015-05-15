@@ -3,7 +3,8 @@ include_once("config.php");
 
 $dealId = $_GET["dealId"] ;
 $memberId = $_GET["memberId"];
-$pickUpLocation = $_GET["pickUpLocation"];
+//$pickUpLocation = $_GET["pickUpLocation"];
+$pickUpLocation = "0";
 
 
 $url = "http://ineed-dealqq.mybluemix.net/getOneDeal?deal_id=". $dealId;
