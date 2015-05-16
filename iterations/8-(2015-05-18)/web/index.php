@@ -4,6 +4,7 @@
 
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../models/Member.php';
+require_once __DIR__.'/../models/Vendor.php';
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -32,12 +33,30 @@ $memberProvider = function ($email) use ($app) {
     return new Member($email, $app['httpClient']);
 };
 
+$vendorProvider = function ($id) use ($app) {
+    return new Vendor($id, $app['httpClient']);
+};
+
+/*
+$app['user.persister'] = $app->share(
+    $app->protect(function($email) use ($app) {
+    return new Member($email, $app['user.persist_path']);
+}));
+*/
+
 // GET ORDER HISTORY
-$app->get('member/{member}/orders', function (Member $member) use ($app) {
-    return $app->json($member->getOrderHistory());
+$app->get('api/member/{member}/orders', function (Member $member) use ($app) {
+    return $app->json($member);
+    //return $app->json($member->getOrderHistory());
 })
-    ->assert('id', '\d+') // make sure provided parameter is numeric
-    ->convert('member', $memberProvider); // construct member info
+->convert('member', $memberProvider); // construct member info
+
+// GET TRANSACTION HISTORY
+$app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
+    return $app->json($vendor->getTransactionHistory());
+})
+->convert('vendor', $vendorProvider);
+
 
 
 // ERROR RESPONSE

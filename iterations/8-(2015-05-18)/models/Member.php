@@ -3,7 +3,7 @@
 use GuzzleHttp\Message\ResponseInterface;
 
 class Member {
-    public $httpClient;
+    private $httpClient;
     public $email, $cardNumber, $cardCVC2, $cardExpiration;
 
     public function __construct($email, \GuzzleHttp\Client $httpClient)  {
