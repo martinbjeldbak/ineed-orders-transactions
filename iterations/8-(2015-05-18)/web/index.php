@@ -6,6 +6,8 @@ require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../models/Member.php';
 require_once __DIR__.'/../models/Vendor.php';
 require_once __DIR__.'/../models/Deal.php';
+require_once __DIR__.'/../models/Order.php';
+require_once __DIR__.'/../models/OrderState.php';
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,19 +44,18 @@ $dealProvider = function ($id) use ($app) {
     return new Deal($id, $app['httpClient']);
 };
 
-/*
-$app['user.persister'] = $app->share(
-    $app->protect(function($email) use ($app) {
-    return new Member($email, $app['user.persist_path']);
-}));
-*/
+
+
+// API ROUTES AND LOGIC
+
 
 // GET ORDER HISTORY
 $app->get('api/member/{member}/orders', function (Member $member) use ($app) {
     return $app->json($member);
     //return $app->json($member->getOrderHistory());
 })
-->convert('member', $memberProvider); // construct member info
+->convert('member', $memberProvider); // construct member class
+
 
 // GET TRANSACTION HISTORY
 $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
@@ -62,12 +63,32 @@ $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($ap
 })
 ->convert('vendor', $vendorProvider);
 
+
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/555403106f2b4e2b00975939)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
-    return $app->json($deal);
+    $order = new Order('credit', $member, $deal, $app['httpClient']);
+    return $app->json($order);
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // ERROR RESPONSE

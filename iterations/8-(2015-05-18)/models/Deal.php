@@ -27,6 +27,7 @@ class Deal {
 
         }
 
+        $this->id = $dealJson['_id'];
         $this->type = $dealJson['type'];
         $this->discount = $dealJson['discount'];
         $this->redeemCount = $dealJson['redeemCount'];
