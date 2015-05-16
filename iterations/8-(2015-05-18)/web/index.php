@@ -5,6 +5,7 @@
 require_once __DIR__.'/../vendor/autoload.php';
 require_once __DIR__.'/../models/Member.php';
 require_once __DIR__.'/../models/Vendor.php';
+require_once __DIR__.'/../models/Deal.php';
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,6 +38,10 @@ $vendorProvider = function ($id) use ($app) {
     return new Vendor($id, $app['httpClient']);
 };
 
+$dealProvider = function ($id) use ($app) {
+    return new Deal($id, $app['httpClient']);
+};
+
 /*
 $app['user.persister'] = $app->share(
     $app->protect(function($email) use ($app) {
@@ -57,6 +62,12 @@ $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($ap
 })
 ->convert('vendor', $vendorProvider);
 
+// MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/555403106f2b4e2b00975939)
+$app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
+    return $app->json($deal);
+})
+->convert('member', $memberProvider)
+->convert('deal', $dealProvider);
 
 
 // ERROR RESPONSE

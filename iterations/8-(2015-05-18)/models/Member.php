@@ -34,4 +34,8 @@ class Member {
 
         return $res->json();
     }
+
+    public function purchaseDeal(Deal $deal) {
+
+    }
 }
