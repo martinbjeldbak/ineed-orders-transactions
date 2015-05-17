@@ -48,7 +48,11 @@ class Vendor {
         $res = $this->httpClient->get("http://ineed-dealqq.mybluemix.net/findDeal?vendorId={$this->id}");
 
         foreach($res->json() as $dealJson)
-            array_push($deals, new Deal($dealJson['_id'], $this, $this->httpClient));
+            array_push($deals,
+                new Deal($dealJson['_id'], $this, $dealJson['dealName'], $dealJson['discount'], $dealJson['expireDate'],
+                    $dealJson['itemSell'], $dealJson['price'], $dealJson['redeemCount'], $dealJson['sendCount'],
+                    $dealJson['type'], $this->httpClient
+                ));
 
         $this->deals = $deals;
     }

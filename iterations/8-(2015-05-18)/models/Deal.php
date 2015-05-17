@@ -6,15 +6,19 @@ class Deal {
     private $httpClient;
     public $id, $name, $vendor, $items = array(), $type, $discount, $redeemCount, $price, $expireDate, $sendCount;
 
-    function __construct($id, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
+    function __construct($id, Vendor $vendor, $dealName, $discount, $expireDate, array $itemIDs, $price, $redeemCount, $sendCount, $type, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
-        $res = $this->httpClient->get("http://ineed-dealqq.mybluemix.net/getOneDeal?deal_id={$id}");
-        $dealJson = $res->json();
-
-        $this->name = $dealJson['dealName'];
+        $this->name = $dealName;
         $this->vendor = $vendor;
+        $this->id = $id;
+        $this->discount = $discount;
+        $this->redeemCount = $redeemCount;
+        $this->price = $price;
+        $this->expireDate = $expireDate;
+        $this->sendCount = $sendCount;
+        $this->type = $type;
 
-        foreach($dealJson['itemSell'] as $itemID) {
+        foreach($itemIDs as $itemID) {
             try {
                 $item = new Item($itemID, $this->vendor, $this->httpClient);
                 array_push($this->items, $item);
@@ -25,14 +29,6 @@ class Deal {
             }
 
         }
-
-        $this->id = $dealJson['_id'];
-        $this->type = $dealJson['type'];
-        $this->discount = $dealJson['discount'];
-        $this->redeemCount = $dealJson['redeemCount'];
-        $this->price = $dealJson['price'];
-        $this->expireDate = $dealJson['expireDate'];
-        $this->sendCount = $dealJson['sendCount'];
     }
 
 }
