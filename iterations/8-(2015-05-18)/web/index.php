@@ -67,11 +67,24 @@ $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($ap
 ->convert('vendor', $vendorProvider);
 */
 
+$app->get('/', function() {
+    $message = "";
+    $message .= "<h1>Please use one of the following API calls:</h1>";
+    $message .= "<ul>";
+    $message .= "<li><p>api/purchase/{memberEmail}/{dealId} have member purchase a deal</p> Live example: <a href=\"/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921\">/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921</a></li>";
+    $message .= "<li><p>member/{memberEmail}/shopping to visit a list of Vendors available to the member</p> Live example <a href=\"/member/pramodbiligiri@gmail.com/shopping\">member/pramodbiligiri@gmail.com/shopping</a></li>";
+    $message .= "<li><p>member/{member}/shopping/{vendorId} to browse the items and deals for a specific vendor</p> Live example <a href=\"/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f\">/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f</a></li>";
+    $message .= "</ul>";
 
-// MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/555403106f2b4e2b00975939)
+    return new Response($message);
+});
+
+
+// MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     $order = new Order('credit', $member, $deal, $app['httpClient']);
-    return $app->json($order->id);
+
+    return $app->json(array('id' => $order->id));
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
@@ -92,8 +105,8 @@ $app->get('member/{member}/shopping', function (Member $member) use ($app) {
 // VIEW ROUTES AND LOGIC
 // (http://homestead.app/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f)
 $app->get('member/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
-    $this->updateDeals();
-    $this->updateItems();
+    $vendor->updateDeals();
+    $vendor->updateItems();
 
     return $app['twig']->render('shoppingVendor.twig', array(
         'member' => $member,

@@ -5,7 +5,8 @@ require_once __DIR__.'/Item.php';
 
 class Vendor {
     private $httpClient;
-    public $id, $address, $description, $email, $name, $phoneNumber, $state, $type, $items = array(), $deals = array();
+    public $id, $address, $description, $email, $name, $phoneNumber,
+        $state, $type, $items = array("If you see this, call updateItems()"), $deals = array("If you see this, call updateDeals()");
 
     public function __construct($id, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
