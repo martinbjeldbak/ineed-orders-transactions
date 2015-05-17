@@ -15,7 +15,6 @@ class Order {
         // TODO: Process payment details here
 
         $this->createOrder();
-        $this->updateOrderState(OrderState::$orderPlaced);
     }
 
     /**
@@ -36,6 +35,12 @@ class Order {
         $orderJson = $res->json();
 
         $this->id = $orderJson['_id'];
+
+        $this->httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$this->id}/order_state", [
+            'json' => [
+                "currentState" => OrderState::$orderPlaced
+            ]]);
+
         $this->created = True;
     }
 
@@ -45,7 +50,7 @@ class Order {
      */
     public function updateOrderState($toState) {
         $this->orderState = $toState;
-        $this->httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$this->id}/order_state", [
+        $this->httpClient->put("https://ineed-db.mybluemix.net/api/orders/{$this->id}/order_state", [
             'json' => [
                 "currentState" => $toState
         ]]);
