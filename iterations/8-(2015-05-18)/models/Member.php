@@ -1,7 +1,5 @@
 <?php
 
-use GuzzleHttp\Message\ResponseInterface;
-
 class Member {
     private $httpClient;
     public $email, $cardNumber, $cardCVC2, $cardExpiration;
@@ -14,6 +12,7 @@ class Member {
         //echo json_encode($res->json(), JSON_PRETTY_PRINT);
 
         $member = $res->json();
+
 
         $this->email = $member['email'];
 

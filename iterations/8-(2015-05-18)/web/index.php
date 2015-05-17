@@ -71,7 +71,7 @@ $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($ap
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/555403106f2b4e2b00975939)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     $order = new Order('credit', $member, $deal, $app['httpClient']);
-    return $app->json($order);
+    return $app->json($order->id);
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
@@ -92,6 +92,9 @@ $app->get('member/{member}/shopping', function (Member $member) use ($app) {
 // VIEW ROUTES AND LOGIC
 // (http://homestead.app/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f)
 $app->get('member/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
+    $this->updateDeals();
+    $this->updateItems();
+
     return $app['twig']->render('shoppingVendor.twig', array(
         'member' => $member,
         'vendor' => $vendor

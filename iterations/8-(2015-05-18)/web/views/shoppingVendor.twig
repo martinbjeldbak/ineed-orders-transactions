@@ -4,7 +4,7 @@
 
 <ul>
 {% for deal in vendor.deals %}
-        <li><p>{{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
+        <li><p><a href="/api/purchase/{{ member.email }}/{{ deal.id }}">Buy</a> {{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
         <ul>
         {% for item in deal.items %}
             <li>{{ item.name }}, ${{ item.price }}, quantity of {{ item.quantity }}</li>
@@ -15,6 +15,8 @@
 
 <h2>Items</h2>
 
+<ul>
 {% for item in vendor.items %}
-    <p>{{ item.name }}</p>
+    <li>{{ item.name }}, desc: {{ item.desc }}, quantity: {{ item.quantity }}, cat: {{ item.category }}, price: {{ item.price }}</li>
 {% endfor %}
+</ul>

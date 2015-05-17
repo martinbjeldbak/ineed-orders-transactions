@@ -22,9 +22,6 @@ class Vendor {
         $this->state = $vendorJson['state'];
         $this->type = $vendorJson['type'];
 
-        $this->updateDeals();
-        $this->updateItems();
-
         //echo json_encode($res['vendors'], JSON_PRETTY_PRINT);
     }
 
