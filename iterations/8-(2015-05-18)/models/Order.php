@@ -6,9 +6,9 @@ class Order {
     private $httpClient, $created = False;
     public $id, $paymentType, $member, $deal, $orderState;
 
-    function __construct($paymentType, Member $member, Deal $deal, \GuzzleHttp\Client $httpClient) {
+    function __construct(Member $member, Deal $deal, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
-        $this->paymentType = $paymentType;
+        $this->paymentType = "martin testing";
         $this->member = $member;
         $this->deal = $deal;
 

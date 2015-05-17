@@ -82,7 +82,7 @@ $app->get('/', function() {
 
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
-    $order = new Order('credit', $member, $deal, $app['httpClient']);
+    $order = new Order($member, $deal, $app['httpClient']);
 
     return $app->json(array('id' => $order->id));
 })
