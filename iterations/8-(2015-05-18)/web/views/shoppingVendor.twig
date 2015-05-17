@@ -1,1 +1,20 @@
-{{ vendor.name }}
+<h1>Vendor name: {{ vendor.name }}</h1>
+
+<h2>Deals</h2>
+
+<ul>
+{% for deal in vendor.deals %}
+        <li><p>{{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
+        <ul>
+        {% for item in deal.items %}
+            <li>{{ item.name }}, ${{ item.price }}, quantity of {{ item.quantity }}</li>
+        {% endfor %}
+        </ul></li>
+{% endfor %}
+</ul>
+
+<h2>Items</h2>
+
+{% for item in vendor.items %}
+    <p>{{ item.name }}</p>
+{% endfor %}

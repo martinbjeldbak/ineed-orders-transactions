@@ -90,6 +90,7 @@ $app->get('member/{member}/shopping', function (Member $member) use ($app) {
 
 
 // VIEW ROUTES AND LOGIC
+// (http://homestead.app/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f)
 $app->get('member/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
     return $app['twig']->render('shoppingVendor.twig', array(
         'member' => $member,

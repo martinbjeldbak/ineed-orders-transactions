@@ -6,18 +6,17 @@ class Deal {
     private $httpClient;
     public $id, $name, $vendor, $items = array(), $type, $discount, $redeemCount, $price, $expireDate, $sendCount;
 
-    function __construct($id, \GuzzleHttp\Client $httpClient) {
+    function __construct($id, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
-
         $res = $this->httpClient->get("http://ineed-dealqq.mybluemix.net/getOneDeal?deal_id={$id}");
         $dealJson = $res->json();
 
         $this->name = $dealJson['dealName'];
-        $this->vendor = new Vendor($dealJson['vendorId'], $httpClient);
+        $this->vendor = $vendor;
 
         foreach($dealJson['itemSell'] as $itemID) {
             try {
-                $item = new Item($itemID, $this->httpClient);
+                $item = new Item($itemID, $this->vendor, $this->httpClient);
                 array_push($this->items, $item);
             }
             catch(\GuzzleHttp\Exception\ClientException $ex) {
