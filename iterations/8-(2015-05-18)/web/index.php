@@ -8,6 +8,8 @@ require_once __DIR__.'/../models/Vendor.php';
 require_once __DIR__.'/../models/Deal.php';
 require_once __DIR__.'/../models/Order.php';
 require_once __DIR__.'/../models/OrderState.php';
+require_once __DIR__.'/../models/Transaction.php';
+require_once __DIR__.'/../models/TransactionState.php';
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -83,8 +85,8 @@ $app->get('/', function() {
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     $order = new Order($member, $deal, $app['httpClient']);
-
-    return $app->json(array('id' => $order->id));
+    $transaction = new Transaction($order, /*$item*/NULL, /*$vendor*/NULL, $deal, $app['httpClient']);
+    return $app->json(array('id' => $order->id)); 
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
