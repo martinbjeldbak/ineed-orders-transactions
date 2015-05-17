@@ -79,13 +79,25 @@ $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) 
 
 // VIEW ROUTES AND LOGIC
 $app->get('member/{member}/shopping', function (Member $member) use ($app) {
+
     return $app['twig']->render('shopping.twig', array(
-       'member' => $member
+        'member' => $member,
+        'vendors' => Vendor::getAllVendors($app['httpClient'])
     ));
 })
 ->convert('member', $memberProvider);
 
 
+
+// VIEW ROUTES AND LOGIC
+$app->get('member/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
+    return $app['twig']->render('shoppingVendor.twig', array(
+        'member' => $member,
+        'vendor' => $vendor
+    ));
+})
+->convert('member', $memberProvider)
+->convert('vendor', $vendorProvider);
 
 
 

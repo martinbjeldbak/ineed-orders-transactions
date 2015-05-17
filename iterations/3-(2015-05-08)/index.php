@@ -14,8 +14,8 @@ $id = $orders->commit();
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="assets/css/custom.css"/>	
+		<link rel="stylesheet" type="text/css" href="../8-(2015-05-18)/assets/css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../8-(2015-05-18)/assets/css/custom.css"/>
 		<script type="text/javascript">
 			function displayTransaction(quantity, itemName, vendor, price) {
 				var orderCart = document.getElementById(""); //TODO
@@ -134,8 +134,8 @@ $id = $orders->commit();
 		<!-- JavaScript includes -->
 
 		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script> 
-		<script src="assets/js/bootstrap.min.js"></script>
-		<script src="assets/js/customjs.js"></script>
+		<script src="../8-(2015-05-18)/assets/js/bootstrap.min.js"></script>
+		<script src="../8-(2015-05-18)/assets/js/customjs.js"></script>
 
 	</body>
 </html>
