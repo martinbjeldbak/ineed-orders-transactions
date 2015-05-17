@@ -11,10 +11,10 @@ class Transaction {
         $this->orderId = $order->id;
         // If dealId and itemId are mutually exclusive, we need schema change to make them both optional,
         // and require one of the two?
-        $this->itemId = /*$item->id*/"placeholder"; // WARNING need service to get item from dealId for caller of this
+        $this->itemId = /*$item->id*/"000000000000000000000000"; // WARNING need service to get item from dealId for caller of this
         $this->quantity = 1;
         $this->unitPrice = /*$item->price*/1.99;
-        $this->vendorId = /*$vendor->id*/"placeholder"; // WARNING need service to get vendor from dealId for caller of this
+        $this->vendorId = /*$vendor->id*/"000000000000000000000000"; // WARNING need service to get vendor from dealId for caller of this
         $this->dealId = $deal->id;
         $this->dealDiscount = $deal->discount; 
 
