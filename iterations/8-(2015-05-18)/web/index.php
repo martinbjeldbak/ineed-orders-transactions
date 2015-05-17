@@ -25,6 +25,10 @@ $app['httpClient'] = $app->share(function () {
     return new \GuzzleHttp\Client();
 });
 
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    'twig.path' => __DIR__.'/views',
+));
+
 /**
  * Instantiates a new member from the given ID, this
  * fetches it from the Member's team so we have access to
@@ -44,8 +48,6 @@ $dealProvider = function ($id) use ($app) {
     return new Deal($id, $app['httpClient']);
 };
 
-
-
 // API ROUTES AND LOGIC
 
 
@@ -58,10 +60,12 @@ $app->get('api/member/{member}/orders', function (Member $member) use ($app) {
 
 
 // GET TRANSACTION HISTORY
+/*
 $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
     return $app->json($vendor->getTransactionHistory());
 })
 ->convert('vendor', $vendorProvider);
+*/
 
 
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/555403106f2b4e2b00975939)
@@ -73,7 +77,13 @@ $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) 
 ->convert('deal', $dealProvider);
 
 
-
+// VIEW ROUTES AND LOGIC
+$app->get('member/{member}/shopping', function (Member $member) use ($app) {
+    return $app['twig']->render('shopping.twig', array(
+       'member' => $member
+    ));
+})
+->convert('member', $memberProvider);
 
 
 
