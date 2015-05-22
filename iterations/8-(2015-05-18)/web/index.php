@@ -52,36 +52,6 @@ $dealProvider = function ($id) use ($app) {
 
 // API ROUTES AND LOGIC
 
-
-// GET ORDER HISTORY
-$app->get('api/member/{member}/orders', function (Member $member) use ($app) {
-    return $app->json($member);
-    //return $app->json($member->getOrderHistory());
-})
-->convert('member', $memberProvider); // construct member class
-
-
-// GET TRANSACTION HISTORY
-/*
-$app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
-    return $app->json($vendor->getTransactionHistory());
-})
-->convert('vendor', $vendorProvider);
-*/
-
-$app->get('/', function() {
-    $message = "";
-    $message .= "<h1>Please use one of the following API calls:</h1>";
-    $message .= "<ul>";
-    $message .= "<li><p>api/purchase/{memberEmail}/{dealId} have member purchase a deal</p> Live example: <a href=\"/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921\">/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921</a></li>";
-    $message .= "<li><p>member/{memberEmail}/shopping to visit a list of Vendors available to the member</p> Live example <a href=\"/member/pramodbiligiri@gmail.com/shopping\">member/pramodbiligiri@gmail.com/shopping</a></li>";
-    $message .= "<li><p>member/{member}/shopping/{vendorId} to browse the items and deals for a specific vendor</p> Live example <a href=\"/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f\">/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f</a></li>";
-    $message .= "</ul>";
-
-    return new Response($message);
-});
-
-
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     $order = new Order($member, $deal, $app['httpClient']);
@@ -91,8 +61,30 @@ $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) 
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
 
+// GET ORDER HISTORY
+$app->get('api/member/{member}/orders', function (Member $member) use ($app) {
+    return $app->json($member);
+    //return $app->json($member->getOrderHistory());
+})
+    ->convert('member', $memberProvider); // construct member class
+
+
+$app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
+    return $app->json($vendor->getTransactionHistory());
+})
+->convert('vendor', $vendorProvider);
+
+$app->get('api/vendor/transactions', function () use ($app) {
+    return $app->json(Vendor::getAllVendorHistory($app['httpClient']));
+})
+    ->convert('vendor', $vendorProvider);
+
 
 // VIEW ROUTES AND LOGIC
+$app->get('/', function() use ($app) {
+    return $app['twig']->render('index.twig');
+});
+
 $app->get('member/{member}/shopping', function (Member $member) use ($app) {
 
     return $app['twig']->render('shopping.twig', array(

@@ -1,5 +1,3 @@
-{{ member.email }}
-
 {% for vendor in vendors %}
-    <a href="/member/{{ member.email }}/shopping/{{ vendor.id }}">{{ vendor.name }}</a><br />
+    <a href="/member/{{ member.email }}/shopping/{{ vendor.id }}">{{ vendor.name }} ({{ vendor.id }})</a><br />
 {% endfor %}

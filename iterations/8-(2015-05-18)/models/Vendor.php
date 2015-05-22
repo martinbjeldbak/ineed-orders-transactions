@@ -14,6 +14,11 @@ class Vendor {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/vendors/{$id}");
         $vendorJson = $res->json();
 
+        // Hacks... sometimes we might be given a null _id
+        if(!array_key_exists('_id', $vendorJson)) {
+            return;
+        }
+
         $this->id = $vendorJson['_id'];
         $this->address = $vendorJson['address'];
         $this->description = $vendorJson['description'];
@@ -58,7 +63,7 @@ class Vendor {
     /**
      * Static method to get an array of all vendors
      * @param \GuzzleHttp\Client $httpClient To be able to make requests
-     * @return array of {Vendor} types, all encapsulated
+     * @return Vendor[] all encapsulated vendor types
      */
     public static function getAllVendors(\GuzzleHttp\Client $httpClient) {
         $vendorsJson = $httpClient->get('http://ineedvendors.mybluemix.net/api/vendors')->json()['vendors'];
@@ -68,5 +73,14 @@ class Vendor {
             array_push($vendors, new Vendor($vendorJson['_id'], $httpClient));
         }
         return $vendors;
+    }
+
+    public static function getAllVendorHistory(\GuzzleHttp\Client $httpClient) {
+        $hist = array();
+
+        foreach(self::getAllVendors($httpClient) as $vendor) {
+            array_push($hist, $vendor->getTransactionHistory());
+        }
+        return $hist;
     }
 }

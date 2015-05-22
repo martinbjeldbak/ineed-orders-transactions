@@ -1,5 +1,13 @@
 <h1>Vendor name: {{ vendor.name }}</h1>
 
+<h2>Items</h2>
+
+<ul>
+    {% for item in vendor.items %}
+        <li><{{ item.name }}, desc: {{ item.desc }}, quantity: {{ item.quantity }}, cat: {{ item.category }}, price: {{ item.price }}</li>
+    {% endfor %}
+</ul>
+
 <h2>Deals</h2>
 
 <ul>
@@ -10,13 +18,5 @@
             <li>{{ item.name }}, ${{ item.price }}, quantity of {{ item.quantity }}</li>
         {% endfor %}
         </ul></li>
-{% endfor %}
-</ul>
-
-<h2>Items</h2>
-
-<ul>
-{% for item in vendor.items %}
-    <li>{{ item.name }}, desc: {{ item.desc }}, quantity: {{ item.quantity }}, cat: {{ item.category }}, price: {{ item.price }}</li>
 {% endfor %}
 </ul>
