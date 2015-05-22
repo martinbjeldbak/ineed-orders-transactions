@@ -42,7 +42,8 @@ class Vendor {
         $res = $this->httpClient->get("http://ineedvendors.mybluemix.net/api/vendor/catalog/{$this->id}");
 
         foreach ($res->json()['products'] as $itemJson)
-            array_push($items, new Item($itemJson['id'], $this, $this->httpClient));
+            array_push($items, new Item($itemJson['id'], $itemJson['description'], $itemJson['name'],
+                $itemJson['price'], $this));
         $this->items = $items;
     }
 

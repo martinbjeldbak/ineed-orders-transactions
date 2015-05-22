@@ -6,8 +6,7 @@ class Deal {
     private $httpClient;
     public $id, $name, $vendor, $items = array(), $type, $discount, $redeemCount, $price, $expireDate, $sendCount;
 
-    function __construct()
-    {
+    function __construct() {
         $a = func_get_args();
         $i = func_num_args();
         if (method_exists($this,$f='__construct'.$i)) {
