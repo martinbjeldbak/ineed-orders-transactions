@@ -32,4 +32,24 @@ class TransactionState {
         }
         return $state;
     }
+
+    public static function getTransStateForTransId($id) {
+        $httpClient = new \GuzzleHttp\Client();
+
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}/transaction_state");
+        return $res->json()['currentState'];
+    }
+
+    public static function getTransStateForTrans(Transaction $trans) {
+        return self::getTransStateForTransId($trans->id);
+    }
+
+    public static function setState(Transaction $trans, $state) {
+        $httpClient = new \GuzzleHttp\Client();
+        $res = $httpClient->post("https://ineed-db.mybluemix.net/api/transactions/{$trans->id}/transaction_state", [
+            'json' => [
+                "currentState" => $state
+            ]]);
+        return $res->json();
+    }
 }

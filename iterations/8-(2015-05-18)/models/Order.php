@@ -107,6 +107,8 @@ class Order {
             $member = new Member($json['memberEmail'], $httpClient);
             $order  = new Order($json['paymentType'], $member, $json['total'], $json['tax'], $httpClient);
             $order->id = $json['_id'];
+            $order->created = True;
+            $order->orderState = OrderState::getOrderStateForOrder($order);
             return $order;
         }
         catch(\GuzzleHttp\Exception\ClientException $ex) {

@@ -103,7 +103,9 @@ class Transaction {
 
             $trans = new Transaction($order, $deal, $quantity, $httpClient);
             $trans->id = $transactionJson['_id'];
+            $trans->transactionFromDeal = True;
             $trans->created = True;
+            $trans->transactionState = TransactionState::getTransStateForTrans($trans);
             return $trans;
         }
         else {
@@ -135,11 +137,7 @@ class Transaction {
 
         $this->id = $transactionJson['_id'];
 
-        $this->httpClient->post("https://ineed-db.mybluemix.net/api/transactions/{$this->id}/transaction_state", [
-            'json' => [
-                "currentState" => TransactionState::$orderPlaced
-            ]]);
-
+        TransactionState::setState($this, TransactionState::$orderPlaced);
         $this->created = True;
     }
 
