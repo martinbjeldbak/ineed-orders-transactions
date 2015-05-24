@@ -102,43 +102,6 @@ class Transaction {
         $this->mediator->updateTotal();
     }
 
-    public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient)
-    {
-        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
-        $transactionJson = $res->json();
-        
-        $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
-        if(is_null($order)) // If no order exists for this transaction
-            return null;
-
-        // Items, quantity, price, are not part of transactions any longer
-
-        $vendor = new Vendor($transactionJson['vendorId'], $httpClient);
-        if(is_null($vendor)) // If vendor cannot be found for this trans
-            return null;
-        
-        $item = new Item($transactionJson['itemId'], $httpClient);
-        $quantity = $transactionJson['quantity'];
-        if (array_key_exists('dealId', $transactionJson)) {
-            // This transaction is the result of a deal
-            $deal = new Deal($transactionJson['dealId'], $httpClient);
-
-            $trans = new Transaction($order, $deal, $quantity, $httpClient);
-            $trans->id = $transactionJson['_id'];
-            $trans->transactionFromDeal = True;
-            $trans->created = True;
-            $trans->transactionState = TransactionState::getTransStateForTrans($trans);
-            return $trans;
-        }
-        else {
-            // This transaction is the result of an item purchase
-            $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
-            $trans->id = $transactionJson['_id'];
-            $trans->created = True;
-            return $trans;
-        }
-    }
-
     /**
      * Instantiate this instance of the transaction in the db
      */
@@ -179,5 +142,57 @@ class Transaction {
      */
     public function getMember() {
         return $this->order->member;
+    }
+
+    public  function toJsonObject() {
+        return array(
+            'transactionId' => $this->id,
+            'isDeal' => $this->transactionFromDeal,
+            'transactionState' => $this->transactionState,
+            'orderId' => $this->order->id,
+            'itemId' => $this->item ? $this->item->id : null,
+            'quantity' => $this->quantity,
+            'unitPrice' => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
+            'vendorId' => $this->vendor->id,
+            'dealId' => $this->deal ? $this->deal->id : null,
+            'dealDiscount' => $this->deal ? $this->deal->discount : null,
+        );
+    }
+
+    public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient)
+    {
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
+        $transactionJson = $res->json();
+
+        $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
+        if(is_null($order)) // If no order exists for this transaction
+            return null;
+
+        // Items, quantity, price, are not part of transactions any longer
+
+        $vendor = new Vendor($transactionJson['vendorId'], $httpClient);
+        if(is_null($vendor)) // If vendor cannot be found for this trans
+            return null;
+
+        $item = new Item($transactionJson['itemId'], $httpClient);
+        $quantity = $transactionJson['quantity'];
+        if (array_key_exists('dealId', $transactionJson)) {
+            // This transaction is the result of a deal
+            $deal = new Deal($transactionJson['dealId'], $httpClient);
+
+            $trans = new Transaction($order, $deal, $quantity, $httpClient);
+            $trans->id = $transactionJson['_id'];
+            $trans->transactionFromDeal = True;
+            $trans->created = True;
+            $trans->transactionState = TransactionState::getTransStateForTrans($trans);
+            return $trans;
+        }
+        else {
+            // This transaction is the result of an item purchase
+            $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
+            $trans->id = $transactionJson['_id'];
+            $trans->created = True;
+            return $trans;
+        }
     }
 }

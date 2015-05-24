@@ -58,7 +58,7 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
     $order = new Order('seb/mar testing', $member, $deal->price, 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
-    return $app->json(array('id' => $order->transaction->id));
+    return $app->json(array('transactionId' => $order->transaction->id));
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
@@ -79,16 +79,26 @@ $app->get('api/v1/purchases/deals', function () use ($app) {
 ->convert('vendor', $vendorProvider);
 
 // GET ORDER HISTORY
-// TODO: Fix this and put in service index
 $app->get('api/v1/members/{member}/orders', function (Member $member) use ($app) {
-    //return $app->json($member);
-    return $app->json($member->getOrderHistory());
+    $result = array();
+    /** @var Order $order */
+    foreach($member->getOrderHistory() as $order) {
+        array_push($result, $order->toJsonObject());
+    }
+
+    return $app->json($result);
 })
 ->convert('member', $memberProvider); // construct member class
 
-
 $app->get('api/v1/vendors/{vendor}/transactions', function (Vendor $vendor) use ($app) {
-    return $app->json($vendor->getTransactionHistory());
+    $result = array();
+
+    /** @var Transaction $trans */
+    foreach($vendor->getTransactionHistory() as $trans) {
+        array_push($result, $trans->toJsonObject());
+    }
+
+    return $app->json($result);
 })
 ->convert('vendor', $vendorProvider);
 
@@ -97,17 +107,7 @@ $app->get('api/v1/vendors/transactions', function () use ($app) {
     foreach(Vendor::getAllVendorHistory($app['httpClient']) as $transactions) {
         /** @var Transaction $transaction */
         foreach($transactions as $transaction) {
-            array_push($result, array(
-                'id' => $transaction->id,
-                'isDeal' => $transaction->transactionFromDeal,
-                'orderId' => $transaction->order->id,
-                'itemId' => $transaction->item ? $transaction->item->id : null,
-                'quantity' => $transaction->quantity,
-                'unitPrice' => $transaction->unitPrice, // TODO: Mediator caluclateTotal() instead?
-                'vendorId' => $transaction->vendor->id,
-                'dealId' => $transaction->deal ? $transaction->deal->id : null,
-                'dealDiscount' => $transaction->deal ? $transaction->deal->discount : null,
-                ));
+            array_push($result, $transaction->toJsonObject());
         }
     }
     return $app->json($result);

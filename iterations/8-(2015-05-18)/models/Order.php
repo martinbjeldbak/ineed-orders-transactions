@@ -88,6 +88,15 @@ class Order {
         OrderState::setState($this, $toState);
     }
 
+    public function toJsonObject() {
+        return array(
+            'orderId' => $this->id,
+            'total' => $this->total,
+            'orderState' => $this->orderState,
+            'tax' => $this->tax,
+        );
+    }
+
     /**
      * Static method to retrieve an existing {Order}, given the ID
      * @param $id string id of order to be found (hexadecimal)
