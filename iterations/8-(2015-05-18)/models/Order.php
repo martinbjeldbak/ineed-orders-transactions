@@ -88,12 +88,18 @@ class Order {
         OrderState::setState($this, $toState);
     }
 
+    /**
+     * Formats this instance to a key-value pair containing only
+     * the most important fields. Used when serializing this object
+     * as JSON.
+     * @return array of key-value pairs, useful for the json_encode() function
+     */
     public function toJsonObject() {
         return array(
-            'orderId' => $this->id,
-            'total' => $this->total,
-            'orderState' => $this->orderState,
-            'tax' => $this->tax,
+            'orderId'    => $this->id,
+            'total'      => $this->total,
+            'orderState' => OrderState::toString($this->orderState),
+            'tax'        => $this->tax,
         );
     }
 

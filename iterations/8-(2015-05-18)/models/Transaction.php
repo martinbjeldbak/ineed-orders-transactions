@@ -144,18 +144,24 @@ class Transaction {
         return $this->order->member;
     }
 
+    /**
+     * Formats this instance to a key-value pair containing only
+     * the most important fields. Used when serializing this object
+     * as JSON.
+     * @return array of key-value pairs, useful for the json_encode() function
+     */
     public  function toJsonObject() {
         return array(
-            'transactionId' => $this->id,
-            'isDeal' => $this->transactionFromDeal,
-            'transactionState' => $this->transactionState,
-            'orderId' => $this->order->id,
-            'itemId' => $this->item ? $this->item->id : null,
-            'quantity' => $this->quantity,
-            'unitPrice' => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
-            'vendorId' => $this->vendor->id,
-            'dealId' => $this->deal ? $this->deal->id : null,
-            'dealDiscount' => $this->deal ? $this->deal->discount : null,
+            'transactionId'    => $this->id,
+            'isDeal'           => $this->transactionFromDeal,
+            'transactionState' => TransactionState::toString($this->transactionState),
+            'orderId'          => $this->order->id,
+            'itemId'           => $this->item ? $this->item->id : null,
+            'quantity'         => $this->quantity,
+            'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
+            'vendorId'         => $this->vendor->id,
+            'dealId'           => $this->deal ? $this->deal->id : null,
+            'dealDiscount'     => $this->deal ? $this->deal->discount : null,
         );
     }
 

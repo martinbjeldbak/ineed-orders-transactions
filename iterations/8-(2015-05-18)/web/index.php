@@ -73,7 +73,6 @@ $app->get('api/v1/purchases/deals', function () use ($app) {
                 'dealId' => $trans->deal->id));
         }
     }
-
     return $app->json($result);
 })
 ->convert('vendor', $vendorProvider);

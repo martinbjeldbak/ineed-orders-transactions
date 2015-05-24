@@ -13,7 +13,7 @@ class TransactionState {
 
         switch($transactionState) {
             case 0:
-                $state .= 'Order placed';
+                $state .= 'Transaction placed';
                 break;
             case 1:
                 $state .= 'Payment Received';
