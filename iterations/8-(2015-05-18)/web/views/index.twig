@@ -1,8 +1,15 @@
-<h1>Please use one of the following API calls:</h1>
+<h1>Orders & Transactions service list</h1>
+
+<h2>Views</h2>
 <ul>
-    <li><p>api/v1/purchase/{memberEmail}/{dealId} have member purchase a deal</p> Live example: <a href="api/v1/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921">/api/v1/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921</a></li>
     <li><p>members/{memberEmail}/shopping to visit a list of Vendors available to the member</p> Live example <a href="members/pramodbiligiri@gmail.com/shopping">members/pramodbiligiri@gmail.com/shopping</a></li>
     <li><p>members/{member}/shopping/{vendorId} to browse the items and deals for a specific vendor</p> Live example <a href="members/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f">/members/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f</a></li>
+</ul>
+
+<h2>API calls (all GET, return JSON objects):</h2>
+<ul>
+    <li><p>api/v1/purchase/{memberEmail}/{dealId} have member purchase a deal</p> Live example: <a href="api/v1/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921">/api/v1/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921</a></li>
+    <li><p>api/v1/members/{member}/orders to brows orders for the supplied given member</p> Live example <a href="api/v1/members/pramodbiligiri@gmail.com/orders">api/v1/members/pramodbiligiri@gmail.com/orders</a></li>
     <li><p>api/v1/vendors/{vendorId}/transactions get vendor's transaction history</p> Live example <a href="api/v1/vendors/55505c1b6f2b4e2b00975804/transactions">api/v1/vendors/55505c1b6f2b4e2b00975804/transactions</a></li>
     <li><p>api/v1/vendors/transactions get transaction history for all vendors</p> Live example <a href="api/v1/vendors/transactions">api/v1/vendors/transactions</a></li>
     <li><p>api/v1/purchases/deals get all transactions for every purchased deal</p> Live example <a href="api/v1/purchases/deals">api/v1/purchases/deals</a></li>
