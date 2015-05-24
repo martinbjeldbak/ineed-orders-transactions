@@ -77,10 +77,7 @@ class Order {
      */
     public function updateOrderState($toState) {
         $this->orderState = $toState;
-        $this->httpClient->put("https://ineed-db.mybluemix.net/api/orders/{$this->id}/order_state", [
-            'json' => [
-                "currentState" => $toState
-        ]]);
+        OrderState::setState($this, $toState);
     }
 
     /**
