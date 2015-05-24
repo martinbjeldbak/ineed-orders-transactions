@@ -116,4 +116,26 @@ class Order {
             return null;
         }
     }
+
+    /**
+     * Returns an array of {Order}s (can be an empty list if no orders) that the supplied {Member}
+     * has participated in.
+     * @param Member $member the member to get orders for
+     * @param \GuzzleHttp\Client $httpClient an instance of a Guzzle http client
+     * @return Order[] orders belonging to this member
+     */
+    public static function getOrdersForMember(Member $member, \GuzzleHttp\Client $httpClient) {
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberEmail={$member->email}");
+        $orders = array();
+
+        foreach($res->json() as $orderJson) {
+            $order = new Order($orderJson['paymentType'], $member, $orderJson['total'], $orderJson['tax'],
+                $httpClient);
+            $order->id = $orderJson['_id'];
+            $order->created = True;
+            $order->orderState = OrderState::getOrderStateForOrder($order);
+            array_push($orders, $order);
+        }
+        return $orders;
+    }
 }

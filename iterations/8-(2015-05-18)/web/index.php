@@ -105,8 +105,8 @@ $app->get('api/v1/vendors/transactions', function () use ($app) {
                 'quantity' => $transaction->quantity,
                 'unitPrice' => $transaction->unitPrice, // TODO: Mediator caluclateTotal() instead?
                 'vendorId' => $transaction->vendor->id,
-                'dealId' => $transaction->deal->id,
-                'dealDiscount' => $transaction->deal->discount,
+                'dealId' => $transaction->deal ? $transaction->deal->id : null,
+                'dealDiscount' => $transaction->deal ? $transaction->deal->discount : null,
                 ));
         }
     }
