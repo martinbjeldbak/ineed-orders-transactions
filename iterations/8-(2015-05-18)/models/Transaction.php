@@ -8,7 +8,7 @@ require_once __DIR__.'/Order.php';
 class Transaction {
     private $httpClient, $created = False;
     public $transactionFromDeal = False; // TODO: This is ugly, needs to be refactored
-    public $id = "Not set yet, call createTransaction()", $paymentType, $member, $transactionState, $order, $deal = null, $vendor = null, $item = null, $quantity;
+    public $id = "Not set yet, call createTransaction()", $paymentType, $transactionState, $order, $deal = null, $vendor = null, $item = null, $quantity;
     public $unitPrice, $mediator;
 
     function __construct() {
@@ -54,6 +54,7 @@ class Transaction {
         $this->mediator = $this->order->mediator;
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
+        $this->transactionFromDeal = True;
     }
     
     public function getUnitPrice() {

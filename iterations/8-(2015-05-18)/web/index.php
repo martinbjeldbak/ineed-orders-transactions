@@ -64,7 +64,17 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
 ->convert('deal', $dealProvider);
 
 $app->get('api/v1/purchases/deals', function () use ($app) {
-    return $app->json(Vendor::getAllDealsPurchased($app['httpClient']));
+    $result = array();
+
+    foreach(Vendor::getAllDealsPurchased($app['httpClient']) as $deals) {
+        foreach($deals as $trans) {
+            array_push($result, array(
+                'member_email' => $trans->getMember()->email,
+                'dealId' => $trans->deal->id));
+        }
+    }
+
+    return $app->json($result);
 })
 ->convert('vendor', $vendorProvider);
 

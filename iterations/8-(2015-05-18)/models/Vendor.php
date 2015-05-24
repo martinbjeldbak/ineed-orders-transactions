@@ -51,6 +51,10 @@ class Vendor {
         return $transactions;
     }
 
+    /**
+     * Ges all purchased deals from this vendor
+     * @return Transaction[]
+     */
     public function getPurchasedDeals() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/transactions?vendorId={$this->id}");
         $transactionsJson = $res->json();
@@ -62,10 +66,11 @@ class Vendor {
         foreach($transactionsJson as $transactionJson) {
             $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
 
-            if(is_null($trans))
+            // Only look at transactions from deals
+            if(is_null($trans) || !$trans->transactionFromDeal)
                 continue;
-            if(!is_null($trans->deal)) // only look at deals
-                array_push($transactions, $trans);
+
+            array_push($transactions, $trans);
         }
         return $transactions;
     }
