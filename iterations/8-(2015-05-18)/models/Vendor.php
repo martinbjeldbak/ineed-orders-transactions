@@ -50,29 +50,7 @@ class Vendor {
                 continue;
             array_push($transactions, $trans);
         }
-
-
         return $transactions;
-    }
-
-    public static function getAllVendorHistory(\GuzzleHttp\Client $httpClient) {
-        $hist = array();
-
-        foreach(self::getAllVendors($httpClient) as $vendor) {
-            $transHist = $vendor->getTransactionHistory();
-
-            if(empty($transHist)) // if vendor has no transaction history
-                continue;
-
-            // Otherwise loop through this vendor's history and add it to our array
-            foreach($vendor->getTransactionHistory() as $trans) {
-                if(is_null($trans) || empty($trans))
-                    continue;
-                array_push($hist, $trans);
-            }
-
-        }
-        return $hist;
     }
 
     public function updateItems() {
@@ -112,5 +90,25 @@ class Vendor {
             array_push($vendors, new Vendor($vendorJson['_id'], $httpClient));
         }
         return $vendors;
+    }
+
+    /**
+     * Static function to get ALL {Vendor}'s transaction history
+     * @param \GuzzleHttp\Client $httpClient instance of a Guzzle {Client}
+     * @return array of transactions (TODO: probably should be an array of arrays
+     */
+    public static function getAllVendorHistory(\GuzzleHttp\Client $httpClient) {
+        $hist = array();
+
+        foreach(self::getAllVendors($httpClient) as $vendor) {
+            $transHist = $vendor->getTransactionHistory();
+
+            if(empty($transHist)) // if vendor has no transaction history, go to next vendor
+                continue;
+
+            array_push($hist, $trans);
+
+        }
+        return $hist;
     }
 }
