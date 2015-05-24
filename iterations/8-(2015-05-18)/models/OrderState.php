@@ -40,4 +40,13 @@ class OrderState {
 
         return $res->json()['currentState'];
     }
+
+    public static function setState(Order $order, $state) {
+        $httpClient = new \GuzzleHttp\Client();
+        $res = $httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$order->id}/order_state", [
+            'json' => [
+                "currentState" => $state
+            ]]);
+        return $res->json();
+    }
 }

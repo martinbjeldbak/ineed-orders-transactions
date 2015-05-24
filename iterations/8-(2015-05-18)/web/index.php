@@ -55,7 +55,7 @@ $dealProvider = function ($id) use ($app) {
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     // TODO: We are the only team to use tax
-    $order = new Order('seb/martin testing', $member, $deal->price, 0, OrderState::$orderPlaced, $app['httpClient']);
+    $order = new Order('seb/martin testing', $member, $deal->price, 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
     return $app->json(array('id' => $order->id));

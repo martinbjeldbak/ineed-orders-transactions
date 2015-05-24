@@ -13,13 +13,12 @@ class Order {
     public $transaction;
 
 
-    function __construct($paymentType, Member $member, $total, $tax, $orderState, \GuzzleHttp\Client $httpClient) {
+    function __construct($paymentType, Member $member, $total, $tax, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
         $this->paymentType = $paymentType;
         $this->member = $member;
         $this->total = $total;
         $this->tax = $tax;
-        $this->orderState = $orderState;
         $this->mediator = new OrderTransactionMediator();
         $this->mediator->registerOrder($this);
     }
@@ -68,10 +67,7 @@ class Order {
 
         $this->id = $orderJson['_id'];
 
-        $this->httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$this->id}/order_state", [
-            'json' => [
-                "currentState" => OrderState::$orderPlaced
-            ]]);
+        OrderState::setState($this, OrderState::$orderPlaced);
 
         $this->created = True;
     }
