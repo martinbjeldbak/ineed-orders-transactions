@@ -93,7 +93,24 @@ $app->get('api/v1/vendors/{vendor}/transactions', function (Vendor $vendor) use 
 ->convert('vendor', $vendorProvider);
 
 $app->get('api/v1/vendors/transactions', function () use ($app) {
-    return $app->json(Vendor::getAllVendorHistory($app['httpClient']));
+    $result = array();
+    foreach(Vendor::getAllVendorHistory($app['httpClient']) as $transactions) {
+        /** @var Transaction $transaction */
+        foreach($transactions as $transaction) {
+            array_push($result, array(
+                'id' => $transaction->id,
+                'isDeal' => $transaction->transactionFromDeal,
+                'orderId' => $transaction->order->id,
+                'itemId' => $transaction->item ? $transaction->item->id : null,
+                'quantity' => $transaction->quantity,
+                'unitPrice' => $transaction->unitPrice, // TODO: Mediator caluclateTotal() instead?
+                'vendorId' => $transaction->vendor->id,
+                'dealId' => $transaction->deal->id,
+                'dealDiscount' => $transaction->deal->discount,
+                ));
+        }
+    }
+    return $app->json($result);
 })
 ->convert('vendor', $vendorProvider);
 
