@@ -8,11 +8,7 @@ class Member {
         $this->httpClient = $httpClient;
         // TODO: exception handling if member not found, etc (property of $res)
         $res = $httpClient->get("http://ineed-members.mybluemix.net/api/profile?email={$email}");
-
-        //echo json_encode($res->json(), JSON_PRETTY_PRINT);
-
         $member = $res->json();
-
 
         $this->email = $member['email'];
 

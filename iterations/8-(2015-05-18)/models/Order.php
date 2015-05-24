@@ -4,49 +4,32 @@ require_once __DIR__.'/OrderState.php';
 
 class Order {
     private $httpClient, $created = False;
-    public $id, $paymentType, $member, $deal, $orderState;
+    public $id = "not set yet (is set when createOrder() is called", $paymentType, $member, $orderState, $total, $tax;
 
-    function __construct() {
-        $a = func_get_args();
-        $i = func_num_args();
-        if (method_exists($this,$f='__construct'.$i)) {
-            call_user_func_array(array($this,$f),$a);
-        }
-    }
 
-    function __construct5($id, $paymentType, Member $member, Deal $deal, OrderState $orderState) {
-        $this->id = $id;
+    function __construct($paymentType, Member $member, $total, $tax, $orderState, \GuzzleHttp\Client $httpClient) {
         $this->paymentType = $paymentType;
         $this->member = $member;
-        $this->deal = $deal;
+        $this->total = $total;
+        $this->tax = $tax;
         $this->orderState = $orderState;
-    }
-
-    function __construct3(Member $member, Deal $deal, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
-        $this->paymentType = "martin testing";
-        $this->member = $member;
-        $this->deal = $deal;
-
-        // TODO: Process payment details here
-
-        $this->createOrder();
     }
 
     /**
-     * Creates this order instance
+     * Commits this order instance to the DB
      */
-    private function createOrder() {
+    public function createOrder() {
         if($this->created) // Don't create a new order if this instance already has been created
             return;
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/orders', [ 'json' => [
             'paymentType' => $this->paymentType,
-            'memberId' => $this->member->email,
-            'total' => $this->deal->price,
-            'tax' => '0.0',
-            'dealId' => $this->deal->id,
-            'dealDiscount' => $this->deal->discount
+            'memberEmail' => $this->member->email,
+            'total' => 0.0, // unused, moved to Transaction class
+            'tax' => 0.0, // unused, moved to transaction class
+            'dealId' => '000000000000000000000000', // unused, moved to transaction class
+            'dealDiscount' => 0.0 // unused, moved to transaction class
         ]]);
         $orderJson = $res->json();
 

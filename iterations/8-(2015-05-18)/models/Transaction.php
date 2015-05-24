@@ -6,7 +6,8 @@ require_once __DIR__.'/Order.php';
 
 class Transaction {
     private $httpClient, $created = False;
-    public $id, $paymentType, $member, $deal, $transactionState, $order, $vendor = null, $item = null, $quantity;
+    public $id = "Not set yet, call createTransaction()", $deal, $transactionState, $order, $vendor = null, $item = null, $quantity;
+    public $transactionFromDeal = False; // TODO: This is ugly, needs to be refactored
 
     function __construct() {
         $a = func_get_args();
@@ -40,12 +41,12 @@ class Transaction {
      * @param \GuzzleHttp\Client $httpClient
      */
     function __construct3(Order $order, Deal $deal, \GuzzleHttp\Client $httpClient) {
+        $this->transactionFromDeal = True;
         $this->httpClient = $httpClient;
         $this->order = $order;
         $this->quantity = 1;
         $this->deal = $deal;
         $this->vendor = $deal->vendor;
-
         //$this->createTransaction();
     }
 
@@ -93,15 +94,28 @@ class Transaction {
         if($this->created) // Don't create a new transaction if this instance already has been created
             return;
 
-        $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
-            'orderId' => $this->order->id,
-            'itemId' => $this->item->id,
-            'quantity' => $this->quantity,
-            'unitPrice' => $this->unitPrice,
-            'vendorId' => $this->vendor->id,
-            'dealId' => $this->deal->id,
-            'dealDiscount' => $this->deal->discount
-        ]]);
+        if($this->transactionFromDeal) {
+            $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
+                'orderId' => $this->order->id,
+                'itemId' => '000000000000000000000000', // itemId is part of the deal
+                'quantity' => $this->quantity,
+                'unitPrice' => $this->order->total,
+                'vendorId' => $this->vendor->id,
+                'dealId' => $this->deal->id,
+                'dealDiscount' => $this->deal->discount
+            ]]);
+        }
+        else { // This transaction is from a normal item's purchase
+            $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
+                'orderId' => $this->order->id,
+                'itemId' => $this->item->id,
+                'quantity' => $this->quantity,
+                'unitPrice' => $this->order->total,
+                'vendorId' => $this->vendor->id,
+                'dealId' => '000000000000000000000000',
+                'dealDiscount' => 0.0
+            ]]);
+        }
         $transactionJson = $res->json();
 
         $this->id = $transactionJson['_id'];
@@ -124,6 +138,14 @@ class Transaction {
             'json' => [
                 "currentState" => $toState
         ]]);
+    }
+
+    /**
+     * Gets the member who initiated this Transaction
+     * @return Member who initiated transaction
+     */
+    public function getMember() {
+        return $this->order->member;
     }
 
 }
