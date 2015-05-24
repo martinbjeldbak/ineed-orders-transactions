@@ -19,6 +19,10 @@ class Order {
     public $created = False;
     /** @var Transaction $transaction */
     public $transaction;
+    /** @var OrderTransactionMediator $mediator */
+    public $mediator;
+    /** @var double $total */
+    public $total;
 
     function __construct($paymentType, Member $member, $total, $tax, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
@@ -70,11 +74,8 @@ class Order {
             'tax' => '0.0',
         ]]);
         $orderJson = $res->json();
-
         $this->id = $orderJson['_id'];
-
         OrderState::setState($this, OrderState::$orderPlaced);
-
         $this->created = True;
     }
 
@@ -88,6 +89,7 @@ class Order {
     }
 
     /**
+     * Static method to retrieve an existing {Order}, given the ID
      * @param $id string id of order to be found (hexadecimal)
      * @param \GuzzleHttp\Client $httpClient instance of a Guzzle htpt client
      * @return null|Order {Order} if order was found for given ID, else {null}
@@ -113,5 +115,4 @@ class Order {
             return null;
         }
     }
-
 }
