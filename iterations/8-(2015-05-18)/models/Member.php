@@ -30,7 +30,8 @@ class Member {
 
     public function getOrderHistory() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberEmail={$this->email}");
-
+        return $res->json();
+        /*
         $orders = array();
 
         if(empty($res->json()))
@@ -42,7 +43,8 @@ class Member {
                 continue;
             array_push($orders, $singleOrder);
         }
-        return $orders;
+        return $orders; 
+        */
     }
 
     public function purchaseDeal(Deal $deal) {

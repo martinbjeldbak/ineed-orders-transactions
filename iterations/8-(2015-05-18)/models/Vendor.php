@@ -35,7 +35,8 @@ class Vendor {
 
     public function getTransactionHistory() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/transactions?vendorId={$this->id}");
-
+        return $res->json();
+        /*
         // Order $order, Item $item, Vendor $vendor, Deal $deal, \GuzzleHttp\Client $httpClient
 
         $transactions = array();
@@ -51,6 +52,8 @@ class Vendor {
             array_push($transactions, $trans);
         }
         return $transactions;
+         
+        */
     }
 
     public function updateItems() {
