@@ -53,13 +53,20 @@ $dealProvider = function ($id) use ($app) {
 // API ROUTES AND LOGIC
 
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
-$app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
-    $order = new Order($member, $app['httpClient']);
+$app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
+    // TODO: We are the only team to use tax
+    $order = new Order('seb/martin testing', $member, $deal->price, 0, OrderState::$orderPlaced, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
     return $app->json(array('id' => $order->id));
+})
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
+
+$app->get('api/v1/purchases/deals', function () use ($app) {
+    return $app->json(Vendor::getAllDealsPurchased($app['httpClient']));
+})
+->convert('vendor', $vendorProvider);
 
 // GET ORDER HISTORY
 // TODO: Fix this and put in service index
@@ -79,7 +86,6 @@ $app->get('api/v1/vendors/transactions', function () use ($app) {
     return $app->json(Vendor::getAllVendorHistory($app['httpClient']));
 })
 ->convert('vendor', $vendorProvider);
-
 
 // VIEW ROUTES AND LOGIC
 $app->get('/', function() use ($app) {

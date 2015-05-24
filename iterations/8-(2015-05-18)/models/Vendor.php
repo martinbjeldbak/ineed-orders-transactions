@@ -51,6 +51,25 @@ class Vendor {
         return $transactions;
     }
 
+    public function getPurchasedDeals() {
+        $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/transactions?vendorId={$this->id}");
+        $transactionsJson = $res->json();
+        $transactions = array();
+
+        if(empty($transactionsJson))
+            return [];
+
+        foreach($transactionsJson as $transactionJson) {
+            $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
+
+            if(is_null($trans))
+                continue;
+            if(!is_null($trans->deal)) // only look at deals
+                array_push($transactions, $trans);
+        }
+        return $transactions;
+    }
+
     public function updateItems() {
         $items = array();
         $res = $this->httpClient->get("http://ineedvendors.mybluemix.net/api/vendor/catalog/{$this->id}");
@@ -103,6 +122,26 @@ class Vendor {
 
             if(empty($transHist)) // if vendor has no transaction history, go to next vendor
                 continue;
+
+            array_push($hist, $transHist);
+
+        }
+        return $hist;
+    }
+
+    /**
+     * @param \GuzzleHttp\Client $httpClient
+     * @return Transaction[][] Array of arrays, with each outer
+     */
+    public static function getAllDealsPurchased(\GuzzleHttp\Client $httpClient) {
+        $hist = array();
+
+        foreach(self::getAllVendors($httpClient) as $vendor) {
+            $transHist = $vendor->getPurchasedDeals();
+
+            if(empty($transHist)) { // if vendor has no transaction history, go to next vendor
+                continue;
+            }
 
             array_push($hist, $transHist);
 
