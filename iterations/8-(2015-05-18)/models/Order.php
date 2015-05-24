@@ -5,13 +5,20 @@ require_once __DIR__.'/OrderState.php';
 require_once __DIR__.'/OrderTransactionMediator.php';
 
 class Order {
-    /* @var $httpClient \GuzzleHttp\Client */
+    /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
+    /** @var boolean $id */
+    public $id = "not set yet (is set when createOrder() is called";
+    /** @var string $paymentType */
+    public $paymentType;
+    /** @var Member $member */
+    public $member;
+    /** @var int $orderState */
+    public $orderState;
+    /** @var bool $created */
     public $created = False;
-    public $id = "not set yet (is set when createOrder() is called", $paymentType, $member, $orderState;
-    /* @var $transaction Transaction */
+    /** @var Transaction $transaction */
     public $transaction;
-
 
     function __construct($paymentType, Member $member, $total, $tax, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
