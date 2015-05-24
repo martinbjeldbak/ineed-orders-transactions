@@ -104,9 +104,8 @@ class Order {
                 return null;
             }
 
-            $orderState = OrderState::getOrderStateForOrderId($json['_id']);
             $member = new Member($json['memberEmail'], $httpClient);
-            $order = new Order($json['paymentType'], $member, $json['total'], $json['tax'], $orderState, $httpClient);
+            $order  = new Order($json['paymentType'], $member, $json['total'], $json['tax'], $httpClient);
             $order->id = $json['_id'];
             return $order;
         }
