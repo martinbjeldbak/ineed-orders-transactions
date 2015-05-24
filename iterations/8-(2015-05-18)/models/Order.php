@@ -1,10 +1,12 @@
 <?php
 
+require_once __DIR__.'/Transaction.php';
 require_once __DIR__.'/OrderState.php';
+require_once __DIR__.'/OrderTransactionMediator.php';
 
 class Order {
     private $httpClient, $created = False;
-    public $id, $paymentType, $member, $deal, $orderState;
+    public $id, $paymentType, $member, $orderState;
 
     function __construct() {
         $a = func_get_args();
@@ -14,39 +16,64 @@ class Order {
         }
     }
 
-    function __construct5($id, $paymentType, Member $member, Deal $deal, OrderState $orderState) {
+    function __construct4($id, $paymentType, Member $member, $orderState) {
         $this->id = $id;
         $this->paymentType = $paymentType;
         $this->member = $member;
-        $this->deal = $deal;
         $this->orderState = $orderState;
+        $this->mediator = new OrderTransactionMediator;
+        $this->mediator->registerOrder($this);
     }
 
-    function __construct3(Member $member, Deal $deal, \GuzzleHttp\Client $httpClient) {
+    function __construct2(Member $member, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
         $this->paymentType = "martin testing";
         $this->member = $member;
-        $this->deal = $deal;
+        $this->mediator = new OrderTransactionMediator;
+        $this->mediator->registerOrder($this);
 
         // TODO: Process payment details here
-
-        $this->createOrder();
+    }
+    
+    public function setTotal($total) {
+        $this->total = $total;
+    }
+ 
+    public function addTransaction() {
+        $a = func_get_args();
+        $i = func_num_args();
+        if (method_exists($this,$f='addTransaction'.$i)) {
+            call_user_func_array(array($this,$f),$a);
+        }
+    }
+    //Transaction containing deal
+    public function addTransaction2(Deal $deal, $quantity) {
+        $transaction = new Transaction($this, $deal, $quantity, $this->httpClient);
+        
+    }
+    // Transaction containing normal line item
+    public function addTransaction3(Item $item, Vendor $vendor, $quantity) {
+        $transaction = new Transaction($this, $item, $vendor, $deal, $this->httpClient);
+    }
+    
+    // COMMIT TO DB, Begin a mediator interaction
+    public function placeOrder() { 
+        $this->createInDB(); //initializes $this->id
+        $this->mediator->createTransactionsInDB();
     }
 
     /**
      * Creates this order instance
      */
-    private function createOrder() {
+    private function createInDB() {
         if($this->created) // Don't create a new order if this instance already has been created
             return;
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/orders', [ 'json' => [
             'paymentType' => $this->paymentType,
-            'memberId' => $this->member->email,
-            'total' => $this->deal->price,
+            'memberEmail' => $this->member->email,
+            'total' => $this->total,
             'tax' => '0.0',
-            'dealId' => $this->deal->id,
-            'dealDiscount' => $this->deal->discount
         ]]);
         $orderJson = $res->json();
 
@@ -88,10 +115,10 @@ class Order {
             }
 
             // echo json_encode($json, JSON_PRETTY_PRINT);
-            // ($id, $paymentType, Member $member, Deal $deal, OrderState $orderState)
+            // ($id, $paymentType, Member $member, OrderState $orderState)
             return new Order($json['_id'], $json['paymentType'],
-                new Member($json['memberEmail'], $httpClient), new Deal($json['dealId'], $httpClient),
-                OrderState::getOrderStateForOrderId($json['id']));
+                new Member($json['memberEmail'], $httpClient),
+                OrderState::getOrderStateForOrderId($json['_id']));
         }
         catch(\GuzzleHttp\Exception\ClientException $ex) {
             // No order not found

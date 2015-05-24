@@ -29,9 +29,20 @@ class Member {
     }
 
     public function getOrderHistory() {
-        $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberId={$this->email}");
+        $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberEmail={$this->email}");
 
-        return $res->json();
+        $orders = array();
+
+        if(empty($res->json()))
+            return [];
+
+        foreach($res->json() as $orderJson) {
+            $singleOrder = Order::getOrderFromId($orderJson['_id'], $this->httpClient);
+            if(is_null($singleOrder))
+                continue;
+            array_push($orders, $singleOrder);
+        }
+        return $orders;
     }
 
     public function purchaseDeal(Deal $deal) {

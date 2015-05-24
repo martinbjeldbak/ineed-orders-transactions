@@ -54,8 +54,9 @@ $dealProvider = function ($id) use ($app) {
 
 // MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
-    $order = new Order($member, $deal, $app['httpClient']);
-    $transaction = new Transaction($order, /*$item*/NULL, /*$vendor*/NULL, $deal, $app['httpClient']);
+    $order = new Order($member, $app['httpClient']);
+    $order->addTransaction($deal, 1/*quantity*/);
+    $order->placeOrder();
     return $app->json(array('id' => $order->id)); 
 })
 ->convert('member', $memberProvider)
@@ -63,8 +64,8 @@ $app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) 
 
 // GET ORDER HISTORY
 $app->get('api/member/{member}/orders', function (Member $member) use ($app) {
-    return $app->json($member);
-    //return $app->json($member->getOrderHistory());
+    //return $app->json($member);
+    return $app->json($member->getOrderHistory());
 })
 ->convert('member', $memberProvider); // construct member class
 
