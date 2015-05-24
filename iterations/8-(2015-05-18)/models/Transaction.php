@@ -103,12 +103,14 @@ class Transaction {
 
             $trans = new Transaction($order, $deal, $quantity, $httpClient);
             $trans->id = $transactionJson['_id'];
+            $trans->created = True;
             return $trans;
         }
         else {
             // This transaction is the result of an item purchase
             $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
             $trans->id = $transactionJson['_id'];
+            $trans->created = True;
             return $trans;
         }
     }
