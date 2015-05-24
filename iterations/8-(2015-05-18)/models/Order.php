@@ -5,17 +5,22 @@ require_once __DIR__.'/OrderState.php';
 require_once __DIR__.'/OrderTransactionMediator.php';
 
 class Order {
-    private $httpClient, $created = False;
+    /* @var $httpClient \GuzzleHttp\Client */
+    private $httpClient;
+    public $created = False;
     public $id = "not set yet (is set when createOrder() is called", $paymentType, $member, $orderState;
+    /* @var $transaction Transaction */
+    public $transaction;
 
 
     function __construct($paymentType, Member $member, $total, $tax, $orderState, \GuzzleHttp\Client $httpClient) {
+        $this->httpClient = $httpClient;
         $this->paymentType = $paymentType;
         $this->member = $member;
         $this->total = $total;
         $this->tax = $tax;
         $this->orderState = $orderState;
-        $this->mediator = new OrderTransactionMediator;
+        $this->mediator = new OrderTransactionMediator();
         $this->mediator->registerOrder($this);
     }
     
@@ -37,7 +42,7 @@ class Order {
     }
     // Transaction containing normal line item
     public function addTransaction3(Item $item, Vendor $vendor, $quantity) {
-        $transaction = new Transaction($this, $item, $vendor, $deal, $this->httpClient);
+        $transaction = new Transaction($this, $item, $vendor, $this->transaction->deal, $this->httpClient);
     }
     
     // COMMIT TO DB, Begin a mediator interaction

@@ -4,8 +4,9 @@ require_once __DIR__.'/Order.php';
 require_once __DIR__.'/Transaction.php';
 
 class OrderTransactionMediator {
-	
+    /* @var $order Order */
 	private $order;
+    /* @var $transactions Transaction[] */
 	private $transactions;
 
 	public function __construct(){
@@ -53,8 +54,8 @@ class OrderTransactionMediator {
                     $minState = $transaction->transactionState;
                 }
             }
-            if ($order->orderState != $minState) {
-                $order->updateOrderState($minState);
+            if ($this->order->orderState != $minState) {
+                $this->order->updateOrderState($minState);
             }
         }
 						
