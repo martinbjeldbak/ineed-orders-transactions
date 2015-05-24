@@ -6,10 +6,32 @@ require_once __DIR__.'/Item.php';
 require_once __DIR__.'/Order.php';
 
 class Transaction {
-    private $httpClient, $created = False;
-    public $transactionFromDeal = False; // TODO: This is ugly, needs to be refactored
-    public $id = "Not set yet, call createTransaction()", $paymentType, $transactionState, $order, $deal = null, $vendor = null, $item = null, $quantity;
-    public $unitPrice, $mediator;
+    /** @var \GuzzleHttp\Client $httpClient */
+    private $httpClient;
+    /** @var bool $created */
+    private $created = False;
+    /** @var bool $transactionFromDeal */
+    public $transactionFromDeal = False;
+    /** @var bool $id */
+    public $id = "Not set yet, call createTransaction()";
+    /** @var int $paymentType */
+    public $paymentType;
+    /** @var int $transactionState  */
+    public $transactionState;
+    /** @var Order $order */
+    public $order;
+    /** @var Deal $deal */
+    public $deal = null;
+    /** @var Vendor $vendor */
+    public $vendor = null;
+    /** @var Item $item  */
+    public $item = null;
+    /** @var int $quantity */
+    public $quantity;
+    /** @var double $unitPrice */
+    public $unitPrice;
+    /** @var OrderTransactionMediator $mediator */
+    public $mediator;
 
     function __construct() {
         $a = func_get_args();
@@ -134,9 +156,7 @@ class Transaction {
             'dealDiscount' => $this->deal ? $this->deal->discount : NULL
         ]]);
         $transactionJson = $res->json();
-
         $this->id = $transactionJson['_id'];
-
         TransactionState::setState($this, TransactionState::$orderPlaced);
         $this->created = True;
     }
