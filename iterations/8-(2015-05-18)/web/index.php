@@ -66,7 +66,7 @@ $app->get('api/member/{member}/orders', function (Member $member) use ($app) {
     return $app->json($member);
     //return $app->json($member->getOrderHistory());
 })
-    ->convert('member', $memberProvider); // construct member class
+->convert('member', $memberProvider); // construct member class
 
 
 $app->get('api/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {

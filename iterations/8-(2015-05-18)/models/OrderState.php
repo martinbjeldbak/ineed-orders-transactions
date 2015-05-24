@@ -32,4 +32,12 @@ class OrderState {
         }
         return $state;
     }
+
+    public static function getOrderStateForOrderId($id) {
+        $httpClient = new \GuzzleHttp\Client();
+
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/orders/{$id}/order_state");
+
+        return $res->json()['currentState'];
+    }
 }

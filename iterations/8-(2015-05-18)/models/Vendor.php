@@ -2,6 +2,8 @@
 
 require_once __DIR__.'/Deal.php';
 require_once __DIR__.'/Item.php';
+require_once __DIR__.'/Order.php';
+require_once __DIR__.'/Transaction.php';
 
 class Vendor {
     private $httpClient;
@@ -34,7 +36,43 @@ class Vendor {
     public function getTransactionHistory() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/transactions?vendorId={$this->id}");
 
-        return $res->json();
+        // Order $order, Item $item, Vendor $vendor, Deal $deal, \GuzzleHttp\Client $httpClient
+
+        $transactions = array();
+
+        if(empty($res->json()))
+            return [];
+
+        foreach($res->json() as $transactionJson) {
+            $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
+
+            if(is_null($trans))
+                continue;
+            array_push($transactions, $trans);
+        }
+
+
+        return $transactions;
+    }
+
+    public static function getAllVendorHistory(\GuzzleHttp\Client $httpClient) {
+        $hist = array();
+
+        foreach(self::getAllVendors($httpClient) as $vendor) {
+            $transHist = $vendor->getTransactionHistory();
+
+            if(empty($transHist)) // if vendor has no transaction history
+                continue;
+
+            // Otherwise loop through this vendor's history and add it to our array
+            foreach($vendor->getTransactionHistory() as $trans) {
+                if(is_null($trans) || empty($trans))
+                    continue;
+                array_push($hist, $trans);
+            }
+
+        }
+        return $hist;
     }
 
     public function updateItems() {
@@ -74,14 +112,5 @@ class Vendor {
             array_push($vendors, new Vendor($vendorJson['_id'], $httpClient));
         }
         return $vendors;
-    }
-
-    public static function getAllVendorHistory(\GuzzleHttp\Client $httpClient) {
-        $hist = array();
-
-        foreach(self::getAllVendors($httpClient) as $vendor) {
-            array_push($hist, $vendor->getTransactionHistory());
-        }
-        return $hist;
     }
 }
