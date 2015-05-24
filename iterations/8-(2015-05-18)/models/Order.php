@@ -70,11 +70,11 @@ class Order {
                 return null;
             }
 
-            // echo json_encode($json, JSON_PRETTY_PRINT);
-            // ($id, $paymentType, Member $member, Deal $deal, OrderState $orderState)
-            return new Order($json['_id'], $json['paymentType'],
-                new Member($json['memberEmail'], $httpClient), new Deal($json['dealId'], $httpClient),
-                OrderState::getOrderStateForOrderId($json['id']));
+            $orderState = OrderState::getOrderStateForOrderId($json['_id']);
+            $member = new Member($json['memberEmail'], $httpClient);
+            $order = new Order($json['paymentType'], $member, $json['total'], $json['tax'], $orderState, $httpClient);
+            $order->id = $json['_id'];
+            return $order;
         }
         catch(\GuzzleHttp\Exception\ClientException $ex) {
             // No order not found

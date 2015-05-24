@@ -26,7 +26,6 @@ class Member {
 
     public function getOrderHistory() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberId={$this->email}");
-
         return $res->json();
     }
 

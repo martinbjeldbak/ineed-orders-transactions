@@ -53,10 +53,9 @@ class Transaction {
     public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient)
     {
         $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
-
+        $transactionJson = $res->json();
         // Order $order, Item $item, Vendor $vendor, Deal $deal, \GuzzleHttp\Client $httpClient
 
-        $transactionJson = $res->json();
 
         $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
         if(is_null($order)) // If no order exists for this transaction
@@ -69,21 +68,22 @@ class Transaction {
             return null;
 
 
-        echo "Debug: Woooosh";
         $item = new Item($transactionJson['itemId'], $httpClient);
         $quantity = $transactionJson['quantity'];
         if (array_key_exists('dealId', $transactionJson)) {
             // This transaction is the result of a deal
             $deal = new Deal($transactionJson['dealId'], $httpClient);
             // (Order $order, Deal $deal, \GuzzleHttp\Client $httpClient) {
-            echo "Debug: Is deal";
-            return new Transaction($order, $deal, $httpClient);
+            $trans = new Transaction($order, $deal, $httpClient);
+            $trans->id = $transactionJson['_id'];
+            return $trans;
         }
         else {
-            echo "Debug: Is no deal";
             // This transaction is the result of an item purchase
             //  __construct5(Order $order, Item $item, $quantity = 1, Vendor $vendor, \GuzzleHttp\Client $httpClient
-            return new Transaction($order, $item, $quantity, $vendor, $httpClient);
+            $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
+            $trans->id = $transactionJson['_id'];
+            return $trans;
         }
     }
 
@@ -147,5 +147,4 @@ class Transaction {
     public function getMember() {
         return $this->order->member;
     }
-
 }

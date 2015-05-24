@@ -35,15 +35,13 @@ class Vendor {
 
     public function getTransactionHistory() {
         $res = $this->httpClient->get("https://ineed-db.mybluemix.net/api/transactions?vendorId={$this->id}");
-
-        // Order $order, Item $item, Vendor $vendor, Deal $deal, \GuzzleHttp\Client $httpClient
-
+        $transactionsJson = $res->json();
         $transactions = array();
 
-        if(empty($res->json()))
+        if(empty($transactionsJson))
             return [];
 
-        foreach($res->json() as $transactionJson) {
+        foreach($transactionsJson as $transactionJson) {
             $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
 
             if(is_null($trans))
@@ -103,10 +101,11 @@ class Vendor {
         foreach(self::getAllVendors($httpClient) as $vendor) {
             $transHist = $vendor->getTransactionHistory();
 
-            if(empty($transHist)) // if vendor has no transaction history, go to next vendor
+            if(empty($transHist)) { // if vendor has no transaction history, go to next vendor
                 continue;
+            }
 
-            array_push($hist, $trans);
+            array_push($hist, $transHist);
 
         }
         return $hist;
