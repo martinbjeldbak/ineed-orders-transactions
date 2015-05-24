@@ -36,12 +36,11 @@ class Order {
     }
     //Transaction containing deal
     public function addTransaction2(Deal $deal, $quantity) {
-        $transaction = new Transaction($this, $deal, $quantity, $this->httpClient);
-        
+        $this->transaction = new Transaction($this, $deal, $quantity, $this->httpClient);
     }
     // Transaction containing normal line item
     public function addTransaction3(Item $item, Vendor $vendor, $quantity) {
-        $transaction = new Transaction($this, $item, $vendor, $this->transaction->deal, $this->httpClient);
+        $this->transaction = new Transaction($this, $item, $quantity, $vendor, $this->httpClient);
     }
     
     // COMMIT TO DB, Begin a mediator interaction
