@@ -1,13 +1,14 @@
 <?php
 
 require_once __DIR__.'/TransactionState.php';
+require_once __DIR__.'/OrderTransactionMediator.php';
 require_once __DIR__.'/Item.php';
 require_once __DIR__.'/Order.php';
 
 class Transaction {
     private $httpClient, $created = False;
-    public $id = "Not set yet, call createTransaction()", $deal, $transactionState, $order, $vendor = null, $item = null, $quantity;
     public $transactionFromDeal = False; // TODO: This is ugly, needs to be refactored
+    public $id = "Not set yet, call createTransaction()", $paymentType, $member, $transactionState, $order, $deal = null, $vendor = null, $item = null, $quantity;
 
     function __construct() {
         $a = func_get_args();
@@ -25,38 +26,65 @@ class Transaction {
      * @param Vendor $vendor
      * @param \GuzzleHttp\Client $httpClient
      */
-    function __construct5(Order $order, Item $item, $quantity = 1, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
-        // vendor
+    function __construct5(Order $order, Item $item, $quantity, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
         $this->order = $order;
         $this->item = $item;
-        $this->quantity = $quantity;
         $this->vendor = $vendor;
         $this->httpClient = $httpClient;
+        $this->unitPrice = $item->price;
+        $this->mediator = $this->order->mediator;
+        $this->mediator->registerTransaction($this);
+        $this->setQuantity($quantity);
     }
 
     /**
      * Creating a transaction from a deal
      * @param Order $order
      * @param Deal $deal
+     * @param $quantity
      * @param \GuzzleHttp\Client $httpClient
      */
-    function __construct3(Order $order, Deal $deal, \GuzzleHttp\Client $httpClient) {
-        $this->transactionFromDeal = True;
+    function __construct4(Order $order, Deal $deal, $quantity, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
         $this->order = $order;
-        $this->quantity = 1;
         $this->deal = $deal;
         $this->vendor = $deal->vendor;
+        $this->unitPrice = $deal->price;
+        $this->mediator = $this->order->mediator;
+        $this->mediator->registerTransaction($this);
+        $this->setQuantity($quantity);
+
         //$this->createTransaction();
+    }
+    
+    public function getUnitPrice() {
+        return $this->unitPrice;
+    }
+    
+    public function getQuantity() {
+        return $this->quantity;
+    }
+    
+    public function getTransactionState() {
+        return $this->transactionState;
+    }
+    
+    // Begin a Mediator interaction
+    public function setQuantity($toQuantity) {
+        $this->quantity = $toQuantity;
+        $this->mediator->updateTotal();
+    }
+    
+    public function removeTransaction() {
+        $this->mediator->unregisterTransaction($this);
+        $this->mediator->updateTotal();
     }
 
     public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient)
     {
         $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
         $transactionJson = $res->json();
-        // Order $order, Item $item, Vendor $vendor, Deal $deal, \GuzzleHttp\Client $httpClient
-
-
+        
         $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
         if(is_null($order)) // If no order exists for this transaction
             return null;
@@ -66,21 +94,19 @@ class Transaction {
         $vendor = new Vendor($transactionJson['vendorId'], $httpClient);
         if(is_null($vendor)) // If vendor cannot be found for this trans
             return null;
-
-
+        
         $item = new Item($transactionJson['itemId'], $httpClient);
         $quantity = $transactionJson['quantity'];
         if (array_key_exists('dealId', $transactionJson)) {
             // This transaction is the result of a deal
             $deal = new Deal($transactionJson['dealId'], $httpClient);
-            // (Order $order, Deal $deal, \GuzzleHttp\Client $httpClient) {
-            $trans = new Transaction($order, $deal, $httpClient);
+
+            $trans = new Transaction($order, $deal, $quantity, $httpClient);
             $trans->id = $transactionJson['_id'];
             return $trans;
         }
         else {
             // This transaction is the result of an item purchase
-            //  __construct5(Order $order, Item $item, $quantity = 1, Vendor $vendor, \GuzzleHttp\Client $httpClient
             $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
             $trans->id = $transactionJson['_id'];
             return $trans;
@@ -90,32 +116,19 @@ class Transaction {
     /**
      * Instantiate this instance of the transaction in the db
      */
-    public function createTransaction() {
+    public function createinDB() {
         if($this->created) // Don't create a new transaction if this instance already has been created
             return;
 
-        if($this->transactionFromDeal) {
-            $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
-                'orderId' => $this->order->id,
-                'itemId' => '000000000000000000000000', // itemId is part of the deal
-                'quantity' => $this->quantity,
-                'unitPrice' => $this->order->total,
-                'vendorId' => $this->vendor->id,
-                'dealId' => $this->deal->id,
-                'dealDiscount' => $this->deal->discount
-            ]]);
-        }
-        else { // This transaction is from a normal item's purchase
-            $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
-                'orderId' => $this->order->id,
-                'itemId' => $this->item->id,
-                'quantity' => $this->quantity,
-                'unitPrice' => $this->order->total,
-                'vendorId' => $this->vendor->id,
-                'dealId' => '000000000000000000000000',
-                'dealDiscount' => 0.0
-            ]]);
-        }
+        $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
+            'orderId' => $this->order->id,
+            'itemId' => $this->item ? $this->item->id : NULL,
+            'quantity' => $this->quantity,
+            'unitPrice' => $this->unitPrice,
+            'vendorId' => $this->vendor->id,
+            'dealId' => $this->deal ? $this->deal->id : NULL,
+            'dealDiscount' => $this->deal ? $this->deal->discount : NULL
+        ]]);
         $transactionJson = $res->json();
 
         $this->id = $transactionJson['_id'];

@@ -101,9 +101,8 @@ class Vendor {
         foreach(self::getAllVendors($httpClient) as $vendor) {
             $transHist = $vendor->getTransactionHistory();
 
-            if(empty($transHist)) { // if vendor has no transaction history, go to next vendor
+            if(empty($transHist)) // if vendor has no transaction history, go to next vendor
                 continue;
-            }
 
             array_push($hist, $transHist);
 

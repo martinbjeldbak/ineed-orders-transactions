@@ -52,22 +52,20 @@ $dealProvider = function ($id) use ($app) {
 
 // API ROUTES AND LOGIC
 
-// MEMBER PURCHASES DEAL (/api/v1/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
-$app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
-    $order = new Order('martin testing 2', $member, $deal->price, OrderState::$orderPlaced, 2.0 , $app['httpClient']);
-    $order->createOrder();
-    $transaction = new Transaction($order, $deal, $app['httpClient']);
-    $transaction->createTransaction();
-    return $app->json($transaction); //('id' => $transaction->id));
-})
+// MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
+$app->get('api/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
+    $order = new Order($member, $app['httpClient']);
+    $order->addTransaction($deal, 1/*quantity*/);
+    $order->placeOrder();
+    return $app->json(array('id' => $order->id));
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
 
 // GET ORDER HISTORY
 // TODO: Fix this and put in service index
 $app->get('api/v1/members/{member}/orders', function (Member $member) use ($app) {
-    return $app->json($member);
-    //return $app->json($member->getOrderHistory());
+    //return $app->json($member);
+    return $app->json($member->getOrderHistory());
 })
 ->convert('member', $memberProvider); // construct member class
 

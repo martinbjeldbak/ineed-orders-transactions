@@ -1,10 +1,12 @@
 <?php
 
+require_once __DIR__.'/Transaction.php';
 require_once __DIR__.'/OrderState.php';
+require_once __DIR__.'/OrderTransactionMediator.php';
 
 class Order {
     private $httpClient, $created = False;
-    public $id = "not set yet (is set when createOrder() is called", $paymentType, $member, $orderState, $total, $tax;
+    public $id = "not set yet (is set when createOrder() is called", $paymentType, $member, $orderState;
 
 
     function __construct($paymentType, Member $member, $total, $tax, $orderState, \GuzzleHttp\Client $httpClient) {
@@ -13,23 +15,49 @@ class Order {
         $this->total = $total;
         $this->tax = $tax;
         $this->orderState = $orderState;
-        $this->httpClient = $httpClient;
+        $this->mediator = new OrderTransactionMediator;
+        $this->mediator->registerOrder($this);
+    }
+    
+    public function setTotal($total) {
+        $this->total = $total;
+    }
+ 
+    public function addTransaction() {
+        $a = func_get_args();
+        $i = func_num_args();
+        if (method_exists($this,$f='addTransaction'.$i)) {
+            call_user_func_array(array($this,$f),$a);
+        }
+    }
+    //Transaction containing deal
+    public function addTransaction2(Deal $deal, $quantity) {
+        $transaction = new Transaction($this, $deal, $quantity, $this->httpClient);
+        
+    }
+    // Transaction containing normal line item
+    public function addTransaction3(Item $item, Vendor $vendor, $quantity) {
+        $transaction = new Transaction($this, $item, $vendor, $deal, $this->httpClient);
+    }
+    
+    // COMMIT TO DB, Begin a mediator interaction
+    public function placeOrder() { 
+        $this->createInDB(); //initializes $this->id
+        $this->mediator->createTransactionsInDB();
     }
 
     /**
      * Commits this order instance to the DB
      */
-    public function createOrder() {
+    private function createInDB() {
         if($this->created) // Don't create a new order if this instance already has been created
             return;
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/orders', [ 'json' => [
             'paymentType' => $this->paymentType,
             'memberEmail' => $this->member->email,
-            'total' => 0.0, // unused, moved to Transaction class
-            'tax' => 0.0, // unused, moved to transaction class
-            'dealId' => '000000000000000000000000', // unused, moved to transaction class
-            'dealDiscount' => 0.0 // unused, moved to transaction class
+            'total' => $this->total,
+            'tax' => '0.0',
         ]]);
         $orderJson = $res->json();
 
