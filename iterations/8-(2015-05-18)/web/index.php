@@ -65,19 +65,19 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
 
 // GET ORDER HISTORY
 // TODO: Fix this and put in service index
-$app->get('api/v1/member/{member}/orders', function (Member $member) use ($app) {
+$app->get('api/v1/members/{member}/orders', function (Member $member) use ($app) {
     return $app->json($member);
     //return $app->json($member->getOrderHistory());
 })
 ->convert('member', $memberProvider); // construct member class
 
 
-$app->get('api/v1/vendor/{vendor}/transactions', function (Vendor $vendor) use ($app) {
+$app->get('api/v1/vendors/{vendor}/transactions', function (Vendor $vendor) use ($app) {
     return $app->json($vendor->getTransactionHistory());
 })
 ->convert('vendor', $vendorProvider);
 
-$app->get('api/v1/vendor/transactions', function () use ($app) {
+$app->get('api/v1/vendors/transactions', function () use ($app) {
     return $app->json(Vendor::getAllVendorHistory($app['httpClient']));
 })
 ->convert('vendor', $vendorProvider);
@@ -88,7 +88,7 @@ $app->get('/', function() use ($app) {
     return $app['twig']->render('index.twig');
 });
 
-$app->get('member/{member}/shopping', function (Member $member) use ($app) {
+$app->get('members/{member}/shopping', function (Member $member) use ($app) {
 
     return $app['twig']->render('shopping.twig', array(
         'member' => $member,
@@ -97,11 +97,7 @@ $app->get('member/{member}/shopping', function (Member $member) use ($app) {
 })
 ->convert('member', $memberProvider);
 
-
-
-// VIEW ROUTES AND LOGIC
-// (http://homestead.app/member/pramodbiligiri@gmail.com/shopping/5553e5ac6f2b4e2b0097591f)
-$app->get('member/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
+$app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
     $vendor->updateDeals();
     $vendor->updateItems();
 
