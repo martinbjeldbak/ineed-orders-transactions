@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class OrderState
+ */
 class OrderState {
     public static $orderPlaced  = 0;
     public static $paymentReceived = 1;
@@ -8,6 +11,11 @@ class OrderState {
     public static $fulfilled = 4;
     public static $cancelled = 5;
 
+    /**
+     * Converts the given order state integer to its corresponding string value
+     * @param int $orderState order state integer to translate to string
+     * @return string translation of given order state to a string
+     */
     public static function toString($orderState) {
         $state = '';
 
@@ -33,6 +41,11 @@ class OrderState {
         return $state;
     }
 
+    /**
+     * Gets the order state for a supplied {Order} ID
+     * @param int $id the hexadecimal {Order} ID
+     * @return int the state the supplied order is in. See the static variables in this class for what this integer means.
+     */
     public static function getOrderStateForOrderId($id) {
         $httpClient = new \GuzzleHttp\Client();
 
@@ -41,6 +54,11 @@ class OrderState {
         return $res->json()['currentState'];
     }
 
+    /**
+     * Gets the order state for a supplied order object
+     * @param Order $order Order object to get the status for
+     * @return int the order state. See the static variables in this class for what this integer means.
+     */
     public static function getOrderStateForOrder(Order $order) {
         return self::getOrderStateForOrderId($order->id);
     }
