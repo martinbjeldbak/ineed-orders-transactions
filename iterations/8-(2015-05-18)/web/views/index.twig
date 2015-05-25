@@ -1,4 +1,9 @@
-<h1>Orders & Transactions service list</h1>
+{% extends 'base.twig' %}
+{% block title %} Services List {% endblock %}
+
+
+{% block content %}
+<h1>Orders & Transactions Services List</h1>
 
 <h2>Views</h2>
 <ul>
@@ -14,3 +19,4 @@
     <li><p>api/v1/vendors/transactions get transaction history for all vendors, deals and normal purchases</p> Live example <a href="api/v1/vendors/transactions">api/v1/vendors/transactions</a></li>
     <li><p>api/v1/vendors/transactions/deals get transaction history for all vendors, deals only</p> Live example <a href="api/v1/vendors/transactions/deals">api/v1/vendors/transactions/deals</a></li>
 </ul>
+{% endblock %}

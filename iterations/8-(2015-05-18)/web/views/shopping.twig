@@ -1,3 +1,10 @@
+{% extends 'base.twig' %}
+{% block title %}Vendors{% endblock %}
+
+{% block content %}
+
 {% for vendor in vendors %}
     <a href="/members/{{ member.email }}/shopping/{{ vendor.id }}">{{ vendor.name }} ({{ vendor.id }})</a><br />
 {% endfor %}
+
+{% endblock %}
