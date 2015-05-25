@@ -66,7 +66,6 @@ class Vendor {
         foreach($transactionsJson as $transactionJson) {
             $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
 
-            // Only look at transactions from deals
             if(is_null($trans) || !$trans->transactionFromDeal)
                 continue;
 

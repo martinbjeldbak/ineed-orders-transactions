@@ -138,7 +138,7 @@ $app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor
 
     return $app['twig']->render('shoppingVendor.twig', array(
         'member' => $member,
-        'vendor' => $vendor
+        'vendor' => $vendor,
     ));
 })
 ->convert('member', $memberProvider)
