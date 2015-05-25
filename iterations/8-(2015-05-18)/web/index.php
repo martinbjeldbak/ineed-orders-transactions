@@ -52,7 +52,6 @@ $dealProvider = function ($id) use ($app) {
 
 // API ROUTES AND LOGIC
 
-// MEMBER PURCHASES DEAL (/api/purchase/pramodbiligiri@gmail.com/5553e5ad6f2b4e2b00975921)
 $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     // TODO: We are the only team to use tax
     $order = new Order('seb/mar testing', $member, $deal->price, 0, $app['httpClient']);
@@ -63,21 +62,6 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
 
-$app->get('api/v1/purchases/deals', function () use ($app) {
-    $result = array();
-
-    foreach(Vendor::getAllDealsPurchased($app['httpClient']) as $deals) {
-        foreach($deals as $trans) {
-            array_push($result, array(
-                'member_email' => $trans->getMember()->email,
-                'dealId' => $trans->deal->id));
-        }
-    }
-    return $app->json($result);
-})
-->convert('vendor', $vendorProvider);
-
-// GET ORDER HISTORY
 $app->get('api/v1/members/{member}/orders', function (Member $member) use ($app) {
     $result = array();
     /** @var Order $order */
@@ -112,6 +96,27 @@ $app->get('api/v1/vendors/transactions', function () use ($app) {
     return $app->json($result);
 })
 ->convert('vendor', $vendorProvider);
+
+$app->get('api/v1/vendors/transactions/deals', function () use ($app) {
+    $result = array();
+
+    foreach(Vendor::getAllDealsPurchased($app['httpClient']) as $deals) {
+        /** @var Transaction $trans */
+        foreach($deals as $trans) {
+            array_push($result, array(
+                'member_email' => $trans->getMember()->email,
+                'dealId' => $trans->deal->id));
+        }
+    }
+    return $app->json($result);
+})
+    ->convert('vendor', $vendorProvider);
+
+
+
+
+
+
 
 // VIEW ROUTES AND LOGIC
 $app->get('/', function() use ($app) {
