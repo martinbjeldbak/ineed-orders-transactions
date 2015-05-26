@@ -104,6 +104,7 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
         /** @var Transaction $trans */
         foreach($deals as $trans) {
             array_push($result, array(
+                'transactionId' => $trans->id,
                 'member_email' => $trans->getMember()->email,
                 'dealId' => $trans->deal->id));
         }
