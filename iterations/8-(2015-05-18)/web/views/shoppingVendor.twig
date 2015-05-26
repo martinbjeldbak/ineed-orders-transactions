@@ -7,7 +7,7 @@
 <h2>Items</h2>
 
 <ul>
-    {% for item in vendor.items %}
+    {% for item in vendor.getItems() %}
         <li>{{ item.name|title }}: {{ item.desc|capitalize }} (${{ item.price }})</li>
     {% else %}
         <li>This vendor has no items</li>
@@ -18,7 +18,7 @@
 <h2>Deals</h2>
 
 <ul>
-{% for deal in vendor.deals %}
+{% for deal in vendor.getDeals() %}
         <li><p><a href="/api/v1/purchase/{{ member.email }}/{{ deal.id }}">Buy</a> {{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
         <ul>
         {% for item in deal.items %}

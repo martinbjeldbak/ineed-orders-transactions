@@ -112,7 +112,7 @@ class Transaction {
             'itemId' => $this->item ? $this->item->id : NULL,
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
-            'vendorId' => $this->vendor->id,
+            'vendorId' => $this->vendor->getID(),
             'dealId' => $this->deal ? $this->deal->id : NULL,
             'dealDiscount' => $this->deal ? $this->deal->discount : NULL
         ]]);
@@ -157,7 +157,7 @@ class Transaction {
             'itemId'           => $this->item ? $this->item->id : null,
             'quantity'         => $this->quantity,
             'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
-            'vendorId'         => $this->vendor->id,
+            'vendorId'         => $this->vendor->getID(),
             'dealId'           => $this->deal ? $this->deal->id : null,
             'dealDiscount'     => $this->deal ? $this->deal->discount : null,
         );

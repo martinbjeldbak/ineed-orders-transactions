@@ -6,9 +6,28 @@ require_once __DIR__.'/Order.php';
 require_once __DIR__.'/Transaction.php';
 
 class Vendor {
+    /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
-    public $id, $address, $description, $email, $name, $phoneNumber,
-        $state, $type, $items = array("If you see this, call updateItems()"), $deals = array("If you see this, call updateDeals()");
+    /** @var string $id */
+    private $id;
+    /** @var string $address */
+    private $address;
+    /** @var string $description */
+    private $description;
+    /** @var string $email */
+    private $email;
+    /** @var string $name */
+    private $name;
+    /** @var string $phoneNumber */
+    private $phoneNumber;
+    /** @var string $state */
+    private $state;
+    /** @var string $type */
+    private $type;
+    /** @var Item[] $items */
+    private $items = array("If you see this, call updateItems()");
+    /** @var Deal[] $deals  */
+    private $deals = array("If you see this, call updateDeals()");
 
     public function __construct($id, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
@@ -151,5 +170,75 @@ class Vendor {
 
         }
         return $hist;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID() {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddress() {
+        return $this->address;
+    }
+
+    /**
+     * @return Item[]
+     */
+    public function getItems() {
+        return $this->items;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail() {
+        return $this->email;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhoneNumber() {
+        return $this->phoneNumber;
+    }
+
+    /**
+     * @return string
+     */
+    public function getState() {
+        return $this->state;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType() {
+        return $this->type;
+    }
+
+    /**
+     * @return Deal[]
+     */
+    public function getDeals() {
+        return $this->deals;
     }
 }
