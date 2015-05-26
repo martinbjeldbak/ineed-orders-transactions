@@ -57,7 +57,7 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
     $order = new Order('seb/mar testing', $member, $deal->price, 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
-    return $app->json(array('transactionId' => $order->transaction->id));
+    return $app->json(array('transactionId' => $order->transaction->getID()));
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
@@ -104,7 +104,7 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
         /** @var Transaction $trans */
         foreach($deals as $trans) {
             array_push($result, array(
-                'transactionId' => $trans->id,
+                'transactionId' => $trans->getID(),
                 'member_email' => $trans->getMember()->email,
                 'dealId' => $trans->deal->id));
         }

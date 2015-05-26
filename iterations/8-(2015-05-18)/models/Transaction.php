@@ -12,26 +12,24 @@ class Transaction {
     private $created = False;
     /** @var bool $transactionFromDeal */
     public $transactionFromDeal = False;
-    /** @var bool $id */
-    public $id = "Not set yet, call createTransaction()";
-    /** @var int $paymentType */
-    public $paymentType;
+    /** @var string $id */
+    private $id = "Not set yet, call createTransaction()";
     /** @var int $transactionState  */
     public $transactionState;
     /** @var Order $order */
-    public $order;
+    private $order;
     /** @var Deal $deal */
-    public $deal = null;
+    private $deal = null;
     /** @var Vendor $vendor */
-    public $vendor = null;
+    private $vendor = null;
     /** @var Item $item  */
-    public $item = null;
+    private $item = null;
     /** @var int $quantity */
-    public $quantity;
+    private $quantity;
     /** @var double $unitPrice */
-    public $unitPrice;
+    private $unitPrice;
     /** @var OrderTransactionMediator $mediator */
-    public $mediator;
+    private $mediator;
 
     function __construct() {
         $a = func_get_args();
@@ -200,5 +198,14 @@ class Transaction {
             $trans->created = True;
             return $trans;
         }
+    }
+
+    /**
+     * Gets the ID of this transaction instance.
+     * @return string the hexadecimal ID. Or "Not set yet, call createTransaction()" if this instance has not been
+     * committed to the DB.
+     */
+    public function getID() {
+        return $this->id;
     }
 }
