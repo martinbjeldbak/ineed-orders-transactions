@@ -5,7 +5,7 @@ require_once __DIR__.'/Item.php';
 require_once __DIR__.'/Order.php';
 require_once __DIR__.'/Transaction.php';
 
-class Vendor {
+class Vendor implements iNeedModel {
     /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
     /** @var string $id */
@@ -243,20 +243,21 @@ class Vendor {
     }
 
     /**
-     * Formats this instance to a key-value pair containing only
-     * the most important fields. Used when serializing this object
-     * as JSON.
-     * @return array of key-value pairs, useful for the json_encode() function
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
      */
-    public function toJsonObject() {
-        return array(
+    function jsonSerialize() {
+        return [
             'vendorID'    => $this->id,
             'name'        => $this->name,
             'description' => $this->description,
-            'email' => $this->email,
+            'email'       => $this->email,
             'phoneNumber' => $this->phoneNumber,
-            'state' => $this->state,
-            'type' => $this->type,
-        );
+            'state'       => $this->state,
+            'type'        => $this->type,
+        ];
     }
 }

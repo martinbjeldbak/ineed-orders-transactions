@@ -66,7 +66,7 @@ $app->get('api/v1/members/{member}/orders', function (Member $member) use ($app)
     $result = array();
     /** @var Order $order */
     foreach($member->getOrderHistory() as $order) {
-        array_push($result, $order->toJsonObject());
+        array_push($result, $order);
     }
 
     return $app->json($result);
@@ -78,7 +78,7 @@ $app->get('api/v1/vendors/{vendor}/transactions', function (Vendor $vendor) use 
 
     /** @var Transaction $trans */
     foreach($vendor->getTransactionHistory() as $trans) {
-        array_push($result, $trans->toJsonObject());
+        array_push($result, $trans);
     }
 
     return $app->json($result);
@@ -90,7 +90,7 @@ $app->get('api/v1/vendors/transactions', function () use ($app) {
     foreach(Vendor::getAllVendorHistory($app['httpClient']) as $transactions) {
         /** @var Transaction $transaction */
         foreach($transactions as $transaction) {
-            array_push($result, $transaction->toJsonObject());
+            array_push($result, $transaction);
         }
     }
     return $app->json($result);

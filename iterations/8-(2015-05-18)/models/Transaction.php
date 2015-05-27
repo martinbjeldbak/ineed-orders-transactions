@@ -5,7 +5,7 @@ require_once __DIR__.'/OrderTransactionMediator.php';
 require_once __DIR__.'/Item.php';
 require_once __DIR__.'/Order.php';
 
-class Transaction {
+class Transaction implements iNeedModel {
     /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
     /** @var bool $created */
@@ -128,27 +128,6 @@ class Transaction {
      */
     public function getMember() {
         return $this->order->getMember();
-    }
-
-    /**
-     * Formats this instance to a key-value pair containing only
-     * the most important fields. Used when serializing this object
-     * as JSON.
-     * @return array of key-value pairs, useful for the json_encode() function
-     */
-    public  function toJsonObject() {
-        return array(
-            'transactionId'    => $this->id,
-            'isDeal'           => $this->transactionFromDeal,
-            'transactionState' => TransactionState::toString($this->transactionState),
-            'orderId'          => $this->order->getID(),
-            'itemId'           => $this->items,
-            'quantity'         => $this->quantity,
-            'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
-            'vendorId'         => $this->vendor->getID(),
-            'dealId'           => $this->deal ? $this->deal->getID() : null,
-            'dealDiscount'     => $this->deal ? $this->deal->getDiscount() : null,
-        );
     }
 
     public static function getTransactionsForOrder(Order $order, \GuzzleHttp\Client $httpClient) {
@@ -283,5 +262,28 @@ class Transaction {
         if($this->transactionFromDeal)
             return $this->deal->getItems();
         return $this->items;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    function jsonSerialize()
+    {
+        return [
+            'transactionId'    => $this->id,
+            'isDeal'           => $this->transactionFromDeal,
+            'transactionState' => TransactionState::toString($this->transactionState),
+            'orderId'          => $this->order->getID(),
+            'itemId'           => $this->items,
+            'quantity'         => $this->quantity,
+            'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
+            'vendorId'         => $this->vendor->getID(),
+            'dealId'           => $this->deal ? $this->deal->getID() : null,
+            'dealDiscount'     => $this->deal ? $this->deal->getDiscount() : null,
+        ];
     }
 }

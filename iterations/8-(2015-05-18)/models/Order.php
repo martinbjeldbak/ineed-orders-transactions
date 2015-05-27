@@ -4,7 +4,7 @@ require_once __DIR__.'/Transaction.php';
 require_once __DIR__.'/OrderState.php';
 require_once __DIR__.'/OrderTransactionMediator.php';
 
-class Order {
+class Order implements iNeedModel {
     /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
     /** @var string $id */
@@ -86,22 +86,6 @@ class Order {
     public function updateOrderState($toState) {
         $this->orderState = $toState;
         OrderState::setState($this, $toState);
-    }
-
-    /**
-     * Formats this instance to a key-value pair containing only
-     * the most important fields. Used when serializing this object
-     * as JSON.
-     * @return array of key-value pairs, useful for the json_encode() function
-     */
-    public function toJsonObject() {
-        return array(
-            'orderId'    => $this->id,
-            'total'      => $this->total,
-            'orderState' => OrderState::toString($this->orderState),
-            'tax'        => $this->tax,
-            'items'      => $this->getItems(),
-        );
     }
 
     /**
@@ -223,5 +207,22 @@ class Order {
             array_push($items, $transaction->getItems());
         }
         return $items;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    function jsonSerialize() {
+        return [
+            'orderId'    => $this->id,
+            'total'      => $this->total,
+            'orderState' => OrderState::toString($this->orderState),
+            'tax'        => $this->tax,
+            'items'      => $this->getItems(),
+        ];
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
 require_once __DIR__.'/Vendor.php';
+require_once __DIR__.'/iNeedModel.php';
 
-class Item {
+class Item implements iNeedModel {
     public $id, $vendor, $name, $desc, $price, $quantity, $category;
 
     function __construct() {
@@ -36,5 +37,23 @@ class Item {
         $this->quantity = "This instance built from Vendors team, no quantity given";
         $this->category = "This instance built from Vendors team, no category given";
         $this->price    = $price;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     */
+    function jsonSerialize() {
+        return [
+            'itemID' => $this->id,
+            'name' => $this->name,
+            'description' => $this->desc,
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+            'vendor' => $this->vendor,
+        ];
     }
 }
