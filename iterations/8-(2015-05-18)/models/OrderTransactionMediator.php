@@ -41,7 +41,7 @@ class OrderTransactionMediator {
             foreach ($this->transactions as $transaction) {
                     $total += $transaction->getUnitPrice() * $transaction->getQuantity();
             }
-            $this->order->total = $total;
+            $this->order->setTotal($total);
             return $total;
 	}
 
@@ -57,7 +57,7 @@ class OrderTransactionMediator {
                 $minState = $transaction->getTransactionState();
             }
         }
-        if ($this->order->orderState != $minState) {
+        if ($this->order->getOrderState() != $minState) {
             $this->order->updateOrderState($minState);
         }
     }

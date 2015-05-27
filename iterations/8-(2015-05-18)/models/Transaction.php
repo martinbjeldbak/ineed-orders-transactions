@@ -53,7 +53,7 @@ class Transaction {
         $this->vendor = $vendor;
         $this->httpClient = $httpClient;
         $this->unitPrice = $item->price;
-        $this->mediator = $this->order->mediator;
+        $this->mediator = $this->order->getMediator();
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
     }
@@ -71,7 +71,7 @@ class Transaction {
         $this->deal = $deal;
         $this->vendor = $deal->getVendor();
         $this->unitPrice = $deal->getPrice();
-        $this->mediator = $this->order->mediator;
+        $this->mediator = $this->order->getMediator();
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
         $this->transactionFromDeal = True;
@@ -127,7 +127,7 @@ class Transaction {
      * @return Member who initiated transaction
      */
     public function getMember() {
-        return $this->order->member;
+        return $this->order->getMember();
     }
 
     /**

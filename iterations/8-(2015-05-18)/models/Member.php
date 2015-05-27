@@ -27,8 +27,4 @@ class Member {
     public function getOrderHistory() {
         return Order::getOrdersForMember($this, $this->httpClient);
     }
-
-    public function purchaseDeal(Deal $deal) {
-
-    }
 }

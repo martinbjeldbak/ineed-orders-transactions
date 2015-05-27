@@ -100,6 +100,7 @@ class Order {
             'total'      => $this->total,
             'orderState' => OrderState::toString($this->orderState),
             'tax'        => $this->tax,
+            'items'      => $this->getItems(),
         );
     }
 
@@ -150,6 +151,7 @@ class Order {
             $order->created = True;
             $order->orderState = OrderState::getOrderStateForOrder($order);
             $order->transactions = Transaction::getTransactionsForOrder($order, $httpClient);
+            array_push($orders, $order);
         }
         return $orders;
     }
@@ -209,5 +211,17 @@ class Order {
      */
     public function getTotal() {
         return $this->total;
+    }
+
+    /**
+     * Gets all items for this order, across all Transactions
+     * @return Item[]
+     */
+    public function getItems() {
+        $items = array();
+        foreach($this->transactions as $transaction) {
+            array_push($items, $transaction->getItems());
+        }
+        return $items;
     }
 }
