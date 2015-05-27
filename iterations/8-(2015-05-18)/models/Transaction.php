@@ -22,8 +22,8 @@ class Transaction {
     private $deal = null;
     /** @var Vendor $vendor */
     private $vendor = null;
-    /** @var Item $item  */
-    private $item = null;
+    /** @var Item[] $items  */
+    private $items = array();
     /** @var int $quantity */
     private $quantity;
     /** @var double $unitPrice */
@@ -49,7 +49,7 @@ class Transaction {
      */
     function __construct5(Order $order, Item $item, $quantity, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
         $this->order = $order;
-        $this->item = $item;
+        $this->items = [$item];
         $this->vendor = $vendor;
         $this->httpClient = $httpClient;
         $this->unitPrice = $item->price;
@@ -97,7 +97,7 @@ class Transaction {
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
             'orderId' => $this->order->id,
-            'itemId' => $this->item ? $this->item->id : NULL,
+            'itemId' => empty($this->items) ? null : $this->items[0]->id,
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
             'vendorId' => $this->vendor->getID(),
@@ -142,7 +142,7 @@ class Transaction {
             'isDeal'           => $this->transactionFromDeal,
             'transactionState' => TransactionState::toString($this->transactionState),
             'orderId'          => $this->order->id,
-            'itemId'           => $this->item ? $this->item->id : null,
+            'itemId'           => $this->items,
             'quantity'         => $this->quantity,
             'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
             'vendorId'         => $this->vendor->getID(),
@@ -248,5 +248,12 @@ class Transaction {
      */
     public function getMediator() {
         return $this->mediator;
+    }
+
+    /**
+     * @return Item[]
+     */
+    public function getItems() {
+        return $this->items;
     }
 }
