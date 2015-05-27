@@ -50,8 +50,13 @@ $dealProvider = function ($id) use ($app) {
     return new Deal($id, $app['httpClient']);
 };
 
+$itemProvider = function ($id) use ($app) {
+    return new Item($id, $app['httpClient']);
+};
+
 // API ROUTES AND LOGIC
 
+// TODO: This should probably be api/v2/purchase/deal/member/deal
 $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     // TODO: We are the only team to use tax
     $order = new Order('seb/mar testing', $member, $deal->getPrice(), 0, $app['httpClient']);
@@ -61,6 +66,18 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);
+
+$app->get('api/v1/purchase/item/{member}/{vendor}/{item}', function (Member $member, Vendor $vendor, Item $item) use ($app) {
+    // TODO: We are the only team to use tax
+    $order = new Order('seb/mar testing', $member, $item->getPrice(), 0, $app['httpClient']);
+    $order->addTransaction($item, $vendor, 1);
+    $order->placeOrder();
+    return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
+})
+->convert('member', $memberProvider)
+->convert('vendor', $vendorProvider)
+->convert('item', $itemProvider);
+
 
 $app->get('api/v1/members/{member}/orders', function (Member $member) use ($app) {
     $result = array();

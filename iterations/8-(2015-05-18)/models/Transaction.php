@@ -40,25 +40,6 @@ class Transaction implements iNeedModel {
     }
 
     /**
-     * Creating a transaction from an item purchase (no deal)
-     * @param Order $order
-     * @param Item $item
-     * @param int $quantity
-     * @param Vendor $vendor
-     * @param \GuzzleHttp\Client $httpClient
-     */
-    function __construct5(Order $order, Item $item, $quantity, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
-        $this->order = $order;
-        $this->items = [$item];
-        $this->vendor = $vendor;
-        $this->httpClient = $httpClient;
-        $this->unitPrice = $item->getPrice();
-        $this->mediator = $this->order->getMediator();
-        $this->mediator->registerTransaction($this);
-        $this->setQuantity($quantity);
-    }
-
-    /**
      * Create a transaction from a deal (no items or quantity)
      * @param Order $order
      * @param Deal $deal
@@ -75,6 +56,25 @@ class Transaction implements iNeedModel {
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
         $this->transactionFromDeal = True;
+    }
+
+    /**
+     * Creating a transaction from an item purchase (no deal)
+     * @param Order $order
+     * @param Item $item
+     * @param int $quantity
+     * @param Vendor $vendor
+     * @param \GuzzleHttp\Client $httpClient
+     */
+    function __construct5(Order $order, Item $item, $quantity, Vendor $vendor, \GuzzleHttp\Client $httpClient) {
+        $this->order = $order;
+        $this->items = [$item];
+        $this->vendor = $vendor;
+        $this->httpClient = $httpClient;
+        $this->unitPrice = $item->getPrice();
+        $this->mediator = $this->order->getMediator();
+        $this->mediator->registerTransaction($this);
+        $this->setQuantity($quantity);
     }
     
     // Begin a Mediator interaction
@@ -101,8 +101,8 @@ class Transaction implements iNeedModel {
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
             'vendorId' => $this->vendor->getID(),
-            'dealId' => $this->deal ? $this->deal->getID() : NULL,
-            'dealDiscount' => $this->deal ? $this->deal->getDiscount() : NULL
+            'dealId' => $this->deal ? $this->deal->getID() : null,
+            'dealDiscount' => $this->deal ? $this->deal->getDiscount() : null
         ]]);
         $transactionJson = $res->json();
         $this->id = $transactionJson['_id'];
@@ -160,7 +160,8 @@ class Transaction implements iNeedModel {
 
         $item = new Item($transactionJson['itemId'], $httpClient);
         $quantity = $transactionJson['quantity'];
-        if (array_key_exists('dealId', $transactionJson)) {
+
+        if (!is_null($transactionJson['dealId'])) {
             // This transaction is the result of a deal
             $deal = new Deal($transactionJson['dealId'], $httpClient);
 
@@ -278,7 +279,7 @@ class Transaction implements iNeedModel {
             'isDeal'           => $this->transactionFromDeal,
             'transactionState' => TransactionState::toString($this->transactionState),
             'orderId'          => $this->order->getID(),
-            'itemId'           => $this->items,
+            'items'            => $this->items,
             'quantity'         => $this->quantity,
             'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
             'vendorId'         => $this->vendor->getID(),

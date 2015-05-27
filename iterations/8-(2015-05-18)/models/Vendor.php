@@ -48,8 +48,6 @@ class Vendor implements iNeedModel {
         $this->phoneNumber = $vendorJson['phoneNumber'];
         $this->state = $vendorJson['state'];
         $this->type = $vendorJson['type'];
-
-        //echo json_encode($res['vendors'], JSON_PRETTY_PRINT);
     }
 
     public function getTransactionHistory() {
