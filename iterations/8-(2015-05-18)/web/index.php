@@ -122,7 +122,7 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
         foreach($deals as $trans) {
             array_push($result, array(
                 'transactionId' => $trans->getID(),
-                'member_email' => $trans->getMember()->email,
+                'member_email' => $trans->getMember()->getEmail(),
                 'dealId' => $trans->getDeal()->getID()));
         }
     }

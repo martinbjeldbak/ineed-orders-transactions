@@ -69,7 +69,7 @@ class Order implements iNeedModel {
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/orders', [ 'json' => [
             'paymentType' => $this->paymentType,
-            'memberEmail' => $this->member->email,
+            'memberEmail' => $this->member->getEmail(),
             'total' => $this->total,
             'tax' => '0.0',
         ]]);
@@ -125,7 +125,7 @@ class Order implements iNeedModel {
      * @return Order[] orders belonging to this member
      */
     public static function getOrdersForMember(Member $member, \GuzzleHttp\Client $httpClient) {
-        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberEmail={$member->email}");
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/orders?memberEmail={$member->getEmail()}");
         $orders = array();
 
         foreach($res->json() as $orderJson) {
