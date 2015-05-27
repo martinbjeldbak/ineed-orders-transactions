@@ -25,6 +25,6 @@ class Member {
     }
 
     public function getOrderHistory() {
-        return Order::getOrdersgetoneForMember($this, $this->httpClient);
+        return Order::getOrdersForMember($this, $this->httpClient);
     }
 }
