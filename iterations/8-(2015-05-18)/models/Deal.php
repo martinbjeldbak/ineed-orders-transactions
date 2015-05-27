@@ -77,7 +77,7 @@ class Deal {
 
         foreach($itemIDs as $itemID) {
             try {
-                $item = new Item($itemID, $this->vendor, $this->httpClient);
+                $item = new Item($itemID, $this->httpClient);
                 array_push($this->items, $item);
             }
             catch(\GuzzleHttp\Exception\ClientException $ex) {

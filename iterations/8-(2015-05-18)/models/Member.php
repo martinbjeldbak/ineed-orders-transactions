@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/iNeedModel.php';
 
 class Member implements iNeedModel {
     /** @var \GuzzleHttp\Client $httpClient */

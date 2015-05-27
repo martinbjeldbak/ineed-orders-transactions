@@ -1,8 +1,6 @@
 <?php
 
-require_once __DIR__.'/Transaction.php';
-require_once __DIR__.'/OrderState.php';
-require_once __DIR__.'/OrderTransactionMediator.php';
+require_once __DIR__.'/iNeedModel.php';
 
 class Order implements iNeedModel {
     /** @var \GuzzleHttp\Client $httpClient */

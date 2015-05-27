@@ -65,12 +65,12 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
     return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
 })
 ->convert('member', $memberProvider)
-->convert('deal', $dealProvider);
+->convert('deal',   $dealProvider);
 
-$app->get('api/v1/purchase/item/{member}/{vendor}/{item}', function (Member $member, Vendor $vendor, Item $item) use ($app) {
+$app->get('api/v1/purchase/item/{member}/{item}', function (Member $member, Item $item) use ($app) {
     // TODO: We are the only team to use tax
     $order = new Order('seb/mar testing', $member, $item->getPrice(), 0, $app['httpClient']);
-    $order->addTransaction($item, $vendor, 1);
+    $order->addTransaction($item, $item->getVendor(), 1);
     $order->placeOrder();
     return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
 })
@@ -118,12 +118,12 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
     $result = array();
 
     foreach(Vendor::getAllDealsPurchased($app['httpClient']) as $deals) {
-        /** @var Transaction $trans */
-        foreach($deals as $trans) {
+        /** @var Transaction $dealTrans */
+        foreach($deals as $dealTrans) {
             array_push($result, array(
-                'transactionId' => $trans->getID(),
-                'member_email' => $trans->getMember()->getEmail(),
-                'dealId' => $trans->getDeal()->getID()));
+                'transactionId' => $dealTrans->getID(),
+                'member_email' => $dealTrans->getMember()->getEmail(),
+                'dealId' => $dealTrans->getDeal()->getID()));
         }
     }
     return $app->json($result);

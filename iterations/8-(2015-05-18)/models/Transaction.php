@@ -158,7 +158,6 @@ class Transaction implements iNeedModel {
         if(is_null($vendor)) // If vendor cannot be found for this trans
             return null;
 
-        $item = new Item($transactionJson['itemId'], $httpClient);
         $quantity = $transactionJson['quantity'];
 
         if (!is_null($transactionJson['dealId'])) {
@@ -172,13 +171,16 @@ class Transaction implements iNeedModel {
             $trans->transactionState = TransactionState::getTransStateForTrans($trans);
             return $trans;
         }
-        else {
+        elseif(is_null($transactionJson['dealId']) && is_null($transactionJson['dealDiscount']) &&
+               !is_null($transactionJson['itemId'])) {
             // This transaction is the result of an item purchase
+            $item = new Item($transactionJson['itemId'], $httpClient);
             $trans = new Transaction($order, $item, $quantity, $vendor, $httpClient);
             $trans->id = $transactionJson['_id'];
             $trans->created = True;
             return $trans;
         }
+        throw new Exception("Not supposed to be here in Transaction:" . json_encode($transactionJson, JSON_PRETTY_PRINT));
     }
 
     public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient) {
