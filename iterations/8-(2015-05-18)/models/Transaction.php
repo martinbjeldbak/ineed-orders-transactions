@@ -59,7 +59,7 @@ class Transaction {
     }
 
     /**
-     * Create a transaction from a deal (no item or quantity)
+     * Create a transaction from a deal (no items or quantity)
      * @param Order $order
      * @param Deal $deal
      * @param $quantity
@@ -96,7 +96,7 @@ class Transaction {
             return;
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
-            'orderId' => $this->order->id,
+            'orderId' => $this->order->getID(),
             'itemId' => empty($this->items) ? null : $this->items[0]->id,
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
@@ -141,7 +141,7 @@ class Transaction {
             'transactionId'    => $this->id,
             'isDeal'           => $this->transactionFromDeal,
             'transactionState' => TransactionState::toString($this->transactionState),
-            'orderId'          => $this->order->id,
+            'orderId'          => $this->order->getID(),
             'itemId'           => $this->items,
             'quantity'         => $this->quantity,
             'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
@@ -216,10 +216,14 @@ class Transaction {
     }
 
     /**
-     * @return Deal
+     * Gets the {Deal} object that this transaction was apart of.
+     * @return Deal the corresponding deal to this transaction
+     * @throws Exception if this transaction is not from a deal, but from an item purchase.
      */
     public function getDeal() {
-        return $this->deal;
+        if($this->isTransactionFromDeal())
+            return $this->deal;
+        throw new Exception("Attempting to get deal from transaction resulting from normal item purchase");
     }
 
     /**
@@ -230,9 +234,13 @@ class Transaction {
     }
 
     /**
-     * @return int
+     * Gets the quantity of the item purchased
+     * @return int the quantity of item purchased
+     * @throws Exception if this Transaction is not the result of a member puchasing a deal
      */
     public function getQuantity() {
+        if($this->transactionFromDeal)
+            throw new Exception("Attempting to get quantity from transaction resulting from a deal");
         return $this->quantity;
     }
 
@@ -254,6 +262,8 @@ class Transaction {
      * @return Item[]
      */
     public function getItems() {
+        if($this->transactionFromDeal)
+            return $this->deal->getItems();
         return $this->items;
     }
 }

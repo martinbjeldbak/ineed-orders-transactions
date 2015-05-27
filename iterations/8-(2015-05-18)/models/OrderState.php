@@ -60,12 +60,12 @@ class OrderState {
      * @return int the order state. See the static variables in this class for what this integer means.
      */
     public static function getOrderStateForOrder(Order $order) {
-        return self::getOrderStateForOrderId($order->id);
+        return self::getOrderStateForOrderId($order->getID());
     }
 
     public static function setState(Order $order, $state) {
         $httpClient = new \GuzzleHttp\Client();
-        $res = $httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$order->id}/order_state", [
+        $res = $httpClient->post("https://ineed-db.mybluemix.net/api/orders/{$order->getID()}/order_state", [
             'json' => [
                 "currentState" => $state
             ]]);

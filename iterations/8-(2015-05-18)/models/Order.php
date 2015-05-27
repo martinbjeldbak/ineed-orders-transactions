@@ -7,22 +7,22 @@ require_once __DIR__.'/OrderTransactionMediator.php';
 class Order {
     /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
-    /** @var boolean $id */
-    public $id = "not set yet (is set when createOrder() is called";
+    /** @var string $id */
+    private $id = "not set yet (is set when createOrder() is called";
     /** @var string $paymentType */
-    public $paymentType;
+    private $paymentType;
     /** @var Member $member */
-    public $member;
+    private $member;
     /** @var int $orderState */
-    public $orderState;
+    private $orderState;
     /** @var bool $created */
-    public $created = False;
+    private $created = False;
     /** @var Transaction $transaction */
-    public $transaction;
+    private $transaction;
     /** @var OrderTransactionMediator $mediator */
-    public $mediator;
+    private $mediator;
     /** @var double $total */
-    public $total;
+    private $total;
 
     function __construct($paymentType, Member $member, $total, $tax, \GuzzleHttp\Client $httpClient) {
         $this->httpClient = $httpClient;
@@ -149,8 +149,66 @@ class Order {
             $order->id = $orderJson['_id'];
             $order->created = True;
             $order->orderState = OrderState::getOrderStateForOrder($order);
-            array_push($orders, $order);
+
+
         }
         return $orders;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID() {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentType() {
+        return $this->paymentType;
+    }
+
+    /**
+     * @return Member
+     */
+    public function getMember() {
+        return $this->member;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOrderState() {
+        return $this->orderState;
+    }
+
+    /**
+     * Checks whether this instance of the object has been committed to Team 10's DB
+     * @return boolean {True} if this instance has been committed to the DB
+     */
+    public function isCreated() {
+        return $this->created;
+    }
+
+    /**
+     * @return Transaction
+     */
+    public function getTransaction() {
+        return $this->transaction;
+    }
+
+    /**
+     * @return OrderTransactionMediator
+     */
+    public function getMediator() {
+        return $this->mediator;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotal() {
+        return $this->total;
     }
 }
