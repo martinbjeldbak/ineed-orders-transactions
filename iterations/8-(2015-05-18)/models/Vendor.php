@@ -85,7 +85,7 @@ class Vendor {
         foreach($transactionsJson as $transactionJson) {
             $trans = Transaction::getTransactionFromId($transactionJson['_id'], $this->httpClient);
 
-            if(is_null($trans) || !$trans->transactionFromDeal)
+            if(is_null($trans) || !$trans->isTransactionFromDeal())
                 continue;
 
             array_push($transactions, $trans);

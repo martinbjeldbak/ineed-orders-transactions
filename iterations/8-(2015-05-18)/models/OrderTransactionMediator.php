@@ -53,8 +53,8 @@ class OrderTransactionMediator {
             if (!$minState) {
                 $minState = $transaction->getTransactionState();
             }
-            else if ($transaction->transactionState < $minState) {
-                $minState = $transaction->transactionState;
+            else if ($transaction->getTransactionState() < $minState) {
+                $minState = $transaction->getTransactionState();
             }
         }
         if ($this->order->orderState != $minState) {

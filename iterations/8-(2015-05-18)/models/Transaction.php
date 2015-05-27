@@ -15,7 +15,7 @@ class Transaction {
     /** @var string $id */
     private $id = "Not set yet, call createTransaction()";
     /** @var int $transactionState  */
-    public $transactionState;
+    private $transactionState;
     /** @var Order $order */
     private $order;
     /** @var Deal $deal */
@@ -40,7 +40,7 @@ class Transaction {
     }
 
     /**
-     * Creating a transaction from an item purchase
+     * Creating a transaction from an item purchase (no deal)
      * @param Order $order
      * @param Item $item
      * @param int $quantity
@@ -59,7 +59,7 @@ class Transaction {
     }
 
     /**
-     * Creating a transaction from a deal
+     * Create a transaction from a deal (no item or quantity)
      * @param Order $order
      * @param Deal $deal
      * @param $quantity
@@ -75,18 +75,6 @@ class Transaction {
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
         $this->transactionFromDeal = True;
-    }
-    
-    public function getUnitPrice() {
-        return $this->unitPrice;
-    }
-    
-    public function getQuantity() {
-        return $this->quantity;
-    }
-    
-    public function getTransactionState() {
-        return $this->transactionState;
     }
     
     // Begin a Mediator interaction
@@ -214,5 +202,51 @@ class Transaction {
      */
     public function isTransactionFromDeal() {
         return $this->transactionFromDeal;
+    }
+
+    public function getTransactionState() {
+        return $this->transactionState;
+    }
+
+    /**
+     * @return Order
+     */
+    public function getOrder() {
+        return $this->order;
+    }
+
+    /**
+     * @return Deal
+     */
+    public function getDeal() {
+        return $this->deal;
+    }
+
+    /**
+     * @return Vendor
+     */
+    public function getVendor() {
+        return $this->vendor;
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity() {
+        return $this->quantity;
+    }
+
+    /**
+     * @return float
+     */
+    public function getUnitPrice() {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @return OrderTransactionMediator
+     */
+    public function getMediator() {
+        return $this->mediator;
     }
 }
