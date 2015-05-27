@@ -8,7 +8,7 @@
 
 <ul>
     {% for item in vendor.getItems() %}
-        <li><a href="/api/v1/purchase/item/{{  }}" {{ item.name|title }}: {{ item.desc|capitalize }} (${{ item.price }})</li>
+        <li><a href="/api/v1/purchase/item/{{ member.email }}/{{ item.id }}">Buy</a> {{ item.name|title }}: {{ item.desc|capitalize }} (${{ item.price }})</li>
     {% else %}
         <li>This vendor has no items</li>
     {% endfor %}
