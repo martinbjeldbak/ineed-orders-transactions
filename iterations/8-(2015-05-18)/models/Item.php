@@ -37,5 +37,4 @@ class Item {
         $this->category = "This instance built from Vendors team, no category given";
         $this->price    = $price;
     }
-
 }
