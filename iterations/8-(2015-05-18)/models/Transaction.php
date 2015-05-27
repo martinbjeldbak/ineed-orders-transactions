@@ -52,7 +52,7 @@ class Transaction implements iNeedModel {
         $this->items = [$item];
         $this->vendor = $vendor;
         $this->httpClient = $httpClient;
-        $this->unitPrice = $item->price;
+        $this->unitPrice = $item->getPrice();
         $this->mediator = $this->order->getMediator();
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
@@ -97,7 +97,7 @@ class Transaction implements iNeedModel {
 
         $res = $this->httpClient->post('https://ineed-db.mybluemix.net/api/transactions', [ 'json' => [
             'orderId' => $this->order->getID(),
-            'itemId' => empty($this->items) ? null : $this->items[0]->id,
+            'itemId' => empty($this->items) ? null : $this->items[0]->getID(),
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
             'vendorId' => $this->vendor->getID(),

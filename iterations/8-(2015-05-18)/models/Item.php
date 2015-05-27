@@ -4,7 +4,20 @@ require_once __DIR__.'/Vendor.php';
 require_once __DIR__.'/iNeedModel.php';
 
 class Item implements iNeedModel {
-    public $id, $vendor, $name, $desc, $price, $quantity, $category;
+    /** @var string $id */
+    private $id;
+    /** @var Vendor $vendor */
+    private $vendor;
+    /** @var string $name */
+    private $name;
+    /** @var string $desc */
+    private $desc;
+    /** @var double $price */
+    private $price;
+    /** @var int $quantity */
+    private $quantity;
+    /** @var string $category */
+    private $category;
 
     function __construct() {
         $a = func_get_args();
@@ -55,5 +68,54 @@ class Item implements iNeedModel {
             'price' => $this->price,
             'vendor' => $this->vendor,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getID() {
+        return $this->id;
+    }
+
+    /**
+     * @return Vendor
+     */
+    public function getVendor() {
+        return $this->vendor;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDesc() {
+        return $this->desc;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice() {
+        return $this->price;
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantity() {
+        return $this->quantity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCategory() {
+        return $this->category;
     }
 }
