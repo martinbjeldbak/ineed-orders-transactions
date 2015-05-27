@@ -57,7 +57,7 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
     $order = new Order('seb/mar testing', $member, $deal->getPrice(), 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
-    return $app->json(array('transactionId' => $order->getTransaction()->getID()));
+    return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
 })
 ->convert('member', $memberProvider)
 ->convert('deal', $dealProvider);

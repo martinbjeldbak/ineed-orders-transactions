@@ -17,8 +17,8 @@ class Order {
     private $orderState;
     /** @var bool $created */
     private $created = False;
-    /** @var Transaction $transaction */
-    private $transaction;
+    /** @var Transaction[] $transaction */
+    private $transactions;
     /** @var OrderTransactionMediator $mediator */
     private $mediator;
     /** @var double $total */
@@ -47,11 +47,11 @@ class Order {
     }
     //Transaction containing deal
     public function addTransaction2(Deal $deal, $quantity) {
-        $this->transaction = new Transaction($this, $deal, $quantity, $this->httpClient);
+        $this->transactions = [new Transaction($this, $deal, $quantity, $this->httpClient)];
     }
     // Transaction containing normal line item
     public function addTransaction3(Item $item, Vendor $vendor, $quantity) {
-        $this->transaction = new Transaction($this, $item, $quantity, $vendor, $this->httpClient);
+        $this->transactions = [new Transaction($this, $item, $quantity, $vendor, $this->httpClient)];
     }
     
     // COMMIT TO DB, Begin a mediator interaction
@@ -149,8 +149,7 @@ class Order {
             $order->id = $orderJson['_id'];
             $order->created = True;
             $order->orderState = OrderState::getOrderStateForOrder($order);
-
-
+            $order->transactions = Transaction::getTransactionsForOrder($order, $httpClient);
         }
         return $orders;
     }
@@ -192,10 +191,10 @@ class Order {
     }
 
     /**
-     * @return Transaction
+     * @return Transaction[]
      */
-    public function getTransaction() {
-        return $this->transaction;
+    public function getTransactions() {
+        return $this->transactions;
     }
 
     /**

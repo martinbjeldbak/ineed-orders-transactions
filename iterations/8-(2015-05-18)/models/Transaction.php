@@ -151,11 +151,24 @@ class Transaction {
         );
     }
 
-    public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient)
-    {
-        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
-        $transactionJson = $res->json();
+    public static function getTransactionsForOrder(Order $order, \GuzzleHttp\Client $httpClient) {
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions?orderId={$order->getID()}");
+        $transactionsJson = $res->json();
 
+        $transactions = array();
+        foreach($transactionsJson as $transactionJson) {
+            array_push($transactions, self::createFromJson($transactionJson, $httpClient));
+        }
+        return $transactions;
+    }
+
+    /**
+     * Private method to rebuild an existing Transaction instance retrieved from the database
+     * @param $transactionJson array This is the transaction info returned as JSON
+     * @param \GuzzleHttp\Client $httpClient
+     * @return null|Transaction
+     */
+    private static function createFromJson($transactionJson, \GuzzleHttp\Client $httpClient) {
         $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
         if(is_null($order)) // If no order exists for this transaction
             return null;
@@ -186,6 +199,11 @@ class Transaction {
             $trans->created = True;
             return $trans;
         }
+    }
+
+    public static function getTransactionFromId($id, \GuzzleHttp\Client $httpClient) {
+        $res = $httpClient->get("https://ineed-db.mybluemix.net/api/transactions/{$id}");
+        return self::createFromJson($res->json(), $httpClient);
     }
 
     /**
