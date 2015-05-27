@@ -54,7 +54,7 @@ $dealProvider = function ($id) use ($app) {
 
 $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $deal) use ($app) {
     // TODO: We are the only team to use tax
-    $order = new Order('seb/mar testing', $member, $deal->price, 0, $app['httpClient']);
+    $order = new Order('seb/mar testing', $member, $deal->getPrice(), 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
     return $app->json(array('transactionId' => $order->transaction->getID()));
@@ -106,12 +106,12 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
             array_push($result, array(
                 'transactionId' => $trans->getID(),
                 'member_email' => $trans->getMember()->email,
-                'dealId' => $trans->deal->id));
+                'dealId' => $trans->deal->getID()));
         }
     }
     return $app->json($result);
 })
-    ->convert('vendor', $vendorProvider);
+->convert('vendor', $vendorProvider);
 
 
 

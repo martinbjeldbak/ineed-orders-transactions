@@ -11,7 +11,7 @@ class Transaction {
     /** @var bool $created */
     private $created = False;
     /** @var bool $transactionFromDeal */
-    public $transactionFromDeal = False;
+    private $transactionFromDeal = False;
     /** @var string $id */
     private $id = "Not set yet, call createTransaction()";
     /** @var int $transactionState  */
@@ -69,8 +69,8 @@ class Transaction {
         $this->httpClient = $httpClient;
         $this->order = $order;
         $this->deal = $deal;
-        $this->vendor = $deal->vendor;
-        $this->unitPrice = $deal->price;
+        $this->vendor = $deal->getVendor();
+        $this->unitPrice = $deal->getPrice();
         $this->mediator = $this->order->mediator;
         $this->mediator->registerTransaction($this);
         $this->setQuantity($quantity);
@@ -113,8 +113,8 @@ class Transaction {
             'quantity' => $this->quantity,
             'unitPrice' => $this->unitPrice,
             'vendorId' => $this->vendor->getID(),
-            'dealId' => $this->deal ? $this->deal->id : NULL,
-            'dealDiscount' => $this->deal ? $this->deal->discount : NULL
+            'dealId' => $this->deal ? $this->deal->getID() : NULL,
+            'dealDiscount' => $this->deal ? $this->deal->getDiscount() : NULL
         ]]);
         $transactionJson = $res->json();
         $this->id = $transactionJson['_id'];
@@ -158,8 +158,8 @@ class Transaction {
             'quantity'         => $this->quantity,
             'unitPrice'        => $this->unitPrice, // TODO: Mediator caluclateTotal() instead?
             'vendorId'         => $this->vendor->getID(),
-            'dealId'           => $this->deal ? $this->deal->id : null,
-            'dealDiscount'     => $this->deal ? $this->deal->discount : null,
+            'dealId'           => $this->deal ? $this->deal->getID() : null,
+            'dealDiscount'     => $this->deal ? $this->deal->getDiscount() : null,
         );
     }
 
@@ -207,5 +207,12 @@ class Transaction {
      */
     public function getID() {
         return $this->id;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isTransactionFromDeal() {
+        return $this->transactionFromDeal;
     }
 }

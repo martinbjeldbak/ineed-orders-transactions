@@ -3,8 +3,28 @@
 require_once __DIR__.'/Item.php';
 
 class Deal {
+    /** @var \GuzzleHttp\Client $httpClient */
     private $httpClient;
-    public $id, $name, $vendor, $items = array(), $type, $discount, $redeemCount, $price, $expireDate, $sendCount;
+    /** @var string $id */
+    private $id;
+    /** @var string $name */
+    private $name;
+    /** @var Vendor $vendor */
+    private $vendor;
+    /** @var Item[] $items */
+    private $items = array();
+    /** @var string $type */
+    private $type;
+    /** @var double $discount */
+    private $discount;
+    /** @var int $redeemCount */
+    private $redeemCount;
+    /** @var double $price */
+    private $price;
+    /** @var string $expireDate */
+    private $expireDate;
+    /** @var int $sendCount */
+    private $sendCount;
 
     function __construct() {
         $a = func_get_args();
@@ -66,6 +86,76 @@ class Deal {
             }
 
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getID() {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * @return Vendor
+     */
+    public function getVendor() {
+        return $this->vendor;
+    }
+
+    /**
+     * @return Item[]
+     */
+    public function getItems() {
+        return $this->items;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType() {
+        return $this->type;
+    }
+
+    /**
+     * @return float
+     */
+    public function getDiscount() {
+        return $this->discount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRedeemCount() {
+        return $this->redeemCount;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPrice() {
+        return $this->price;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExpireDate() {
+        return $this->expireDate;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSendCount() {
+        return $this->sendCount;
     }
 
 }
