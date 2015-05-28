@@ -178,10 +178,8 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
     $item_id = $form->get('id');
 
     // Empty cart
-    if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1) {
-        //$session->remove('products');
-        $session->clear();
-    }
+    if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1)
+        $session->remove('products');
 
     // Add item to shopping cart
     if(!is_null($form->get('type')) && $form->get('type') == 'add') {
