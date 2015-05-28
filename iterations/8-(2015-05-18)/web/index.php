@@ -62,6 +62,33 @@ $app->before(function ($request) {
     $request->getSession()->start();
 });
 
+
+$localDebugging = false;
+if ($localDebugging) {
+    setrawcookie('sessionToken', 'test');
+    $_COOKIE['sessionToken'] = 'test';
+    setrawcookie('memberEmail', 'seb@test.com');
+    $_COOKIE['memberEmail'] = 'seb@test.com';
+}
+// check if sessionToken exists
+if(!isset($_COOKIE['sessionToken'])) {
+    header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
+    die();
+}
+// check if sessionToken has expired
+else if(!$localDebugging){
+    $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
+    if(empty($res->json())) {
+        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
+        die();
+    }
+}
+session_id($_COOKIE['sessionToken']);
+session_start();
+if (!isset($_SESSION['order'])) {
+    $_SESSION['order'] = new Order('sessionOrder', new Member($_COOKIE['memberEmail'], $app['httpClient']), 0, 0, $app['httpClient']);
+}
+
 // API ROUTES AND LOGIC
 
 // TODO: This should probably be api/v2/purchase/deal/member/deal
