@@ -5,21 +5,25 @@ require_once __DIR__.'/Transaction.php';
 
 class OrderTransactionMediator {
     /* @var $order Order */
-	private $order;
+    private $order;
     /* @var $transactions Transaction[] */
-	private $transactions;
+    private $transactions;
 
-	public function __construct(){
-            $this->transactions = array(); 
-	}	
-	
-	public function registerOrder(Order $order){
-            $this->order = $order; 
-	}	
+    public function __construct(){
+        $this->transactions = array(); 
+    }	
+    
+    public function getTransactions() {
+        return $this->transactions;
+    }
 
-	public function registerTransaction(Transaction $transaction) {
-            array_push($this->transactions, $transaction);
-	}
+    public function registerOrder(Order $order){
+        $this->order = $order; 
+    }	
+
+    public function registerTransaction(Transaction $transaction) {
+        array_push($this->transactions, $transaction);
+    }
 
     // Support deleting of a transaction from order
     public function unregisterTransaction(Transaction $transaction) {
@@ -36,14 +40,14 @@ class OrderTransactionMediator {
     }
 
     // Transaction -> Order
-	public function updateTotal() {
-            $total = 0;
-            foreach ($this->transactions as $transaction) {
-                    $total += $transaction->getUnitPrice() * $transaction->getQuantity();
-            }
-            $this->order->setTotal($total);
-            return $total;
-	}
+    public function updateTotal() {
+        $total = 0;
+        foreach ($this->transactions as $transaction) {
+                $total += $transaction->getUnitPrice() * $transaction->getQuantity();
+        }
+        $this->order->setTotal($total);
+        return $total;
+    }
 
     // Transaction -> Order -- order state not guaranteed to change
     public function updateOrderState() {

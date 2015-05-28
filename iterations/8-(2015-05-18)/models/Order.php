@@ -178,7 +178,7 @@ class Order implements iNeedModel {
      * @return Transaction[]
      */
     public function getTransactions() {
-        return $this->transactions;
+        return $this->mediator->getTransactions();
     }
 
     /**
