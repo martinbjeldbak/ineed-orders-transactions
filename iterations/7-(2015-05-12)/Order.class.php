@@ -14,7 +14,8 @@ class Order {
 	private $orderPlacedDate;
 	private $orderFulfilledDate;
 	
-     	public function __construct($member,$vendor, $mediator,$vendorLink,$pickUpLocation,$orderPlacedDate,$deal,$vendorImage){
+     	public function __construct($orderNo,$member,$vendor, $mediator,$vendorLink,$pickUpLocation,$orderPlacedDate,$deal,$vendorImage){
+		$this->orderNo = $orderNo;	
 		$this->mediator = $mediator;
 		$this->mediator->registerOrder($this);
 		$this->orderState = $this->mediator->createOrderState();
@@ -91,56 +92,57 @@ class Order {
 	}
 	public function setOrderNo($value)
 	{
-		$this->orderNo = $value;
+		$orderNo = $value;
 	}
 	public function setOrderState($value)
 	{
-        $this->orderState = $value;
+		$orderState = $value;
 	} 
 	public function setTotal($value)
 	{
-        $this->total=$value;
+		$total=$value;
 	}
 	public function setMember ($value)
 	{
-        $this->member= $value;
+		$member= $value;	
 	}
 	public function setTax($value)
 	{
-        $this->tax = $value;
+		$tax = $value;
 	}
 	public function setDeal($value)
 	{
-        $this->deal = $value;
+		$deal = $value;
 	}
 	public function setVendor ($value) 
 	{
-        $this->vendor = $value;
+		$vendor = $value;
 	}
 	public function setMediator ($value)
 	{
-        $this->mediator = $value;
+		$mediator = $value;
 	}
 	public function setVendorLink ($value)
 	{
-        $this->vendorLink = $value;
+		$vendorLink = $value;
 	}
 	public function setVendorImage ($value)
 	{
-        $this->vendorImage = $value;
+		$vendorImage = $value;
 	}
 	public function setPickUpLocation ($value)
 	{
-        $this->pickUpLocation = $value;
+		$pickUpLocation = $value;
 	}
 	public function setOrderPlacedDate ($value)
 	{
-        $this->orderPlacedDate = $value;
+		$orderPlacedDate = $value;
 	}
 	public function setOrderFulfilledDate ($value)
 	{
-        $this->orderFulfilledDate = $value;
+		$orderFulfilledDate = $value;
 	}
+
 }
 
 
