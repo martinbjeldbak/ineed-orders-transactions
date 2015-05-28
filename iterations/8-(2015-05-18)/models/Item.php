@@ -23,6 +23,8 @@ class Item implements iNeedModel {
         $i = func_num_args();
         if (method_exists($this,$f='__construct'.$i)) {
             call_user_func_array(array($this,$f),$a);
+        } else {
+            throw new Exception("Item constructor does not support {$i} arguments");
         }
     }
 

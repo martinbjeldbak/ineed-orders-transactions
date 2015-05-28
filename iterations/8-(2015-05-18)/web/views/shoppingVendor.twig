@@ -2,30 +2,75 @@
 {% block title %} Items {% endblock %}
 
 {% block content %}
-<h1>Vendor name: {{ vendor.name|title }}</h1>
+    <h1>Vendor {{ vendor.name|title }}</h1>
 
-<h2>Items</h2>
+    <h1>Products</h1>
 
-<ul>
-    {% for item in vendor.getItems() %}
-        <li><a href="/api/v1/purchase/item/{{ member.email }}/{{ item.id }}">Buy</a> {{ item.name|title }}: {{ item.desc|capitalize }} (${{ item.price }})</li>
-    {% else %}
-        <li>This vendor has no items</li>
-    {% endfor %}
-</ul>
-
-{% if vendor.deals|length > 0 %}
-<h2>Deals</h2>
-
-<ul>
-{% for deal in vendor.getDeals() %}
-        <li><p><a href="/api/v1/purchase/{{ member.email }}/{{ deal.id }}">Buy</a> {{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
-        <ul>
-        {% for item in deal.items %}
-            <li>{{ item.name }}, ${{ item.price }}, quantity of {{ item.quantity }}</li>
+    <div class="products">
+        {% for item in vendor.getItems() %}
+            <div class="product">
+                <form method="post" action="{{ vendor.getID }}/cart_update">
+                    <div>{{ item.name }}</div>
+                    <div>{{ item.desc }}</div>
+                    <div>${{ item.price }}</div>
+                    <label><input type="text" name="qty" value="1" size="3"/></label>
+                    <button>Add To Cart</button>
+                    <input type="hidden" name="id" value="{{ item.getID() }}" />
+                    <input type="hidden" name="type" value="add"/>
+                </form>
+            </div>
         {% endfor %}
-        </ul></li>
-{% endfor %}
-{% endif %}
-</ul>
+    </div>
+
+    <div class="shopping-cart">
+        <h2>Cart</h2>
+
+        {% if app.session.get('products') %}
+            <ol>
+                {% set total = 0.0 %}
+                {% for item in app.session.get('products') %}
+                    {% if item|length > 0 %}
+                        <li><form method="post" action="{{ vendor.getID }}/cart_update">
+                                <input type="hidden" name="type" value="remove"/>
+                                <input type="hidden" name="id" value="{{ item.id }}" />
+                                <button>{{ item.name }} &times;</button>
+                            </form>
+                        </li>
+                        {% set total = total + (item.price * item.qty) %}
+                    {% endif %}
+                {% endfor %}
+            </ol>
+            <span>Total: ${{ total }} <a href="view_cart">Check out</a></span>
+            <form method="post" action="{{ vendor.getID }}/cart_update">
+                <button>Empty cart</button>
+                <input type="hidden" name="emptycart" value="1"/>
+            </form>
+        {% endif %}
+    </div>
+
+
+    <h2>Items</h2>
+
+    <ul>
+        {% for item in vendor.getItems() %}
+            <li><a href="/api/v1/purchase/item/{{ member.email }}/{{ item.id }}">Buy</a> {{ item.name|title }}: {{ item.desc|capitalize }} (${{ item.price }})</li>
+        {% else %}
+            <li>This vendor has no items</li>
+        {% endfor %}
+    </ul>
+
+    {% if vendor.deals|length > 0 %}
+    <h2>Deals</h2>
+
+    <ul>
+    {% for deal in vendor.getDeals() %}
+            <li><p><a href="/api/v1/purchase/{{ member.email }}/{{ deal.id }}">Buy</a> {{ deal.name }} (discount {{ deal.discount }}, redeem count: {{ deal.redeemCount }}) has items:</p>
+            <ul>
+            {% for item in deal.items %}
+                <li>{{ item.name }}, ${{ item.price }}, quantity of {{ item.quantity }}</li>
+            {% endfor %}
+            </ul></li>
+    {% endfor %}
+    {% endif %}
+    </ul>
 {% endblock %}

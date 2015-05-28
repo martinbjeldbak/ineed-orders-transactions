@@ -11,6 +11,7 @@ require_once __DIR__.'/../models/OrderState.php';
 require_once __DIR__.'/../models/Transaction.php';
 require_once __DIR__.'/../models/TransactionState.php';
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 $app = new Silex\Application();
@@ -30,6 +31,9 @@ $app['httpClient'] = $app->share(function () {
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     'twig.path' => __DIR__.'/views',
 ));
+
+$app->register(new Silex\Provider\SessionServiceProvider());
+$app->register(new Silex\Provider\UrlGeneratorServiceProvider());
 
 /**
  * Instantiates a new member from the given ID, this
@@ -53,6 +57,10 @@ $dealProvider = function ($id) use ($app) {
 $itemProvider = function ($id) use ($app) {
     return new Item($id, $app['httpClient']);
 };
+
+$app->before(function ($request) {
+    $request->getSession()->start();
+});
 
 // API ROUTES AND LOGIC
 
@@ -151,6 +159,7 @@ $app->get('members/{member}/shopping', function (Member $member) use ($app) {
 ->convert('member', $memberProvider);
 
 $app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
+    //$app['session']->clear();
     $vendor->updateDeals();
     $vendor->updateItems();
 
@@ -160,13 +169,78 @@ $app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor
     ));
 })
 ->convert('member', $memberProvider)
-->convert('vendor', $vendorProvider);
+->convert('vendor', $vendorProvider)
+->bind('vendorShopping');
 
+$app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $member, Vendor $vendor, Request $form) use ($app) {
+    /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
+    $session = $app['session'];
+    $item_id = $form->get('id');
 
+    // Empty cart
+    if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1) {
+        //$session->remove('products');
+        $session->clear();
+    }
 
+    // Add item to shopping cart
+    if(!is_null($form->get('type')) && $form->get('type') == 'add') {
+        /** @var Item $item */
+        $item = new Item($item_id, $app['httpClient']);
+        $qty = $form->get('qty');
+        $product[] = array();
 
+        // prepare array for session variable
+        $new_product = array(array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice()));
 
+        if($session->has('products')) { // if we have the session
+            $found = false;
 
+            foreach ($session->get('products') as $cart_itm) {
+                if(empty($cart_itm))
+                    continue;
+                if($cart_itm['id'] == $item_id) { // item exists in array, update qty
+                    $product[] = array('name' => $cart_itm['name'],'id' => $cart_itm['id'],
+                        'qty' => $qty, 'price' => $cart_itm['price']);
+                    $found = true;
+                }
+                else {
+                    //item doesn't exist in the list, just retrive old info and prepare array for session var
+                    $product[] = array('name' => $cart_itm['name'],'id' => $cart_itm['id'],
+                        'qty' => $cart_itm['qty'], 'price' => $cart_itm['price']);
+                }
+            }
+
+            if($found == false) { //we didn't find item in array
+                $session->set('products', array_merge($product, $new_product));
+            }
+            else {
+                $session->set('products', $product);
+            }
+        }
+        else
+            $session->set('products', $new_product);
+    }
+
+    // Remove item from shopping cart
+    if(!is_null($form->get('type')) && $form->get('type') == 'remove' && $session->has('products')) {
+        $product[] = array();
+        foreach($session->get('products') as $cart_itm) {
+            if(empty($cart_itm))
+                continue;
+            if($cart_itm['id'] != $item_id) { //item doesn't exist in the list
+                $product[] = array('name' => $cart_itm['name'], 'id' => $cart_itm['code'], 'qty' => $cart_itm['qty'],
+                    'price' => $cart_itm['price']);
+            }
+            $session->set('products', $product);
+        }
+    }
+
+    // Return to shopping route
+    return $app->redirect($app['url_generator']->generate('vendorShopping', array('member' => $member->getEmail(), 'vendor' => $vendor->getID())));
+})
+    ->convert('member', $memberProvider)
+    ->convert('vendor', $vendorProvider);
 
 
 
