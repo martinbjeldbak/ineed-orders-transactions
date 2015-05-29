@@ -25,10 +25,10 @@
     <div class="shopping-cart">
         <h2>Cart</h2>
 
-        {% if products|length > 0 %}
+        {% if app.session.get('products') %}
             <ol>
                 {% set total = 0.0 %}
-                {% for item in products %}
+                {% for item in app.session.get('products') %}
                     {% if item|length > 0 %}
                         <li><form method="post" action="{{ vendor.getID() }}/cart_update">
                                 <input type="hidden" name="type" value="remove"/>
