@@ -215,7 +215,7 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
         $product[] = array();
 
         // prepare array for session variable
-        $new_product = array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice());
+        $new_product = array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice(), 'vendorId' => $vendor->getID());
 
         if(!empty($_SESSION['products'])) { // if we have the session
             $found = false;
