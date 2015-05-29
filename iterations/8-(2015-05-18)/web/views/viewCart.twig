@@ -1,0 +1,39 @@
+{% set total = 0 %}
+{% set cart_items_index = 0 %}
+
+<h1>View cart</h1>
+
+<div>
+    {% if app.session.get('products') %}
+        <form id="checkout" method="post" action="checkout"></form>
+            <ul>
+                {% for item in app.session.get('products') %}
+                    {% if item|length > 0 %}
+                    <form id="cart_update" method="post" action="cart_update"></form>
+                        <li> {{ item.name }}
+                            <div>
+                                    <input type="hidden" name="type" value="remove" form="cart_update"/>
+                                    <input type="hidden" name="id" value="{{ item.id }}" form="cart_update" />
+                                    <input type="submit" value="&times;" form="cart_update" />
+                            </div>
+                            <div>${{ item.price }}</div>
+                            <div>Qty: {{ item.qty }}</div>
+                        </li>
+                        {% set total = total + (item.price * item.qty) %}
+
+                        <input type="hidden" name="item_name[{{ cart_items_index }}]" value="{{ item.name }}" form="checkout" />
+                        <input type="hidden" name="item_id[{{ cart_items_index }}]" value="{{ item.id }}" form="checkout" />
+                        <input type="hidden" name="item_qty[{{ cart_items_index }}]" value="{{ item.qty }}" form="checkout" />
+                        {% set cart_items_index = cart_items_index + 1 %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <div>
+                <strong>Total: ${{ total }}</strong>
+                <input type="hidden" name="num_cart_items" value="{{ cart_items_index }}" form="checkout" />
+                <input type="submit" value="Pay now" form="checkout"/>
+            </div>
+    {% else %}
+        <h2>Your cart is empty!</h2>
+    {% endif %}
+</div>

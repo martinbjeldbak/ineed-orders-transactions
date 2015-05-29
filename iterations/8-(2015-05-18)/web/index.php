@@ -63,32 +63,6 @@ $app->before(function ($request) {
 });
 
 
-$localDebugging = false;
-if ($localDebugging) {
-    setrawcookie('sessionToken', 'test');
-    $_COOKIE['sessionToken'] = 'test';
-    setrawcookie('memberEmail', 'seb@test.com');
-    $_COOKIE['memberEmail'] = 'seb@test.com';
-}
-// check if sessionToken exists
-if(!isset($_COOKIE['sessionToken'])) {
-    header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-    die();
-}
-// check if sessionToken has expired
-else if(!$localDebugging){
-    $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
-    if(empty($res->json())) {
-        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-        die();
-    }
-}
-session_id($_COOKIE['sessionToken']);
-session_start();
-if (!isset($_SESSION['order'])) {
-    $_SESSION['order'] = new Order('sessionOrder', new Member($_COOKIE['memberEmail'], $app['httpClient']), 0, 0, $app['httpClient']);
-}
-
 // API ROUTES AND LOGIC
 
 // TODO: This should probably be api/v2/purchase/deal/member/deal
@@ -168,9 +142,6 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
 
 
 
-
-
-
 // VIEW ROUTES AND LOGIC
 $app->get('/', function() use ($app) {
     return $app['twig']->render('index.twig');
@@ -187,7 +158,7 @@ $app->get('members/{member}/shopping', function (Member $member) use ($app) {
 
 $app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
     //$app['session']->clear();
-    $vendor->updateDeals();
+    //$vendor->updateDeals();
     $vendor->updateItems();
 
     return $app['twig']->render('shoppingVendor.twig', array(
@@ -264,11 +235,25 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
     // Return to shopping route
     return $app->redirect($app['url_generator']->generate('vendorShopping', array('member' => $member->getEmail(), 'vendor' => $vendor->getID())));
 })
-    ->convert('member', $memberProvider)
-    ->convert('vendor', $vendorProvider);
+->convert('member', $memberProvider)
+->convert('vendor', $vendorProvider);
 
+$app->get('members/{member}/shopping/{vendor}/view_cart', function (Member $member, Vendor $vendor) use ($app) {
+    /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
+    $session = $app['session'];
 
+    return $app['twig']->render('viewCart.twig', array(
+        'member' => $member,
+        'vendor' => $vendor,
+    ));
+})
+->convert('member', $memberProvider)
+->convert('vendor', $vendorProvider);
 
+$app->post('members/{member}/shopping/{vendor}/checkout', function (Request $form) use ($app) {
+    echo "TODO: Process paypal here, see viewCart.twig for information given to us in the form";
+    echo $form->get('num_cart_items');
+});
 
 
 
