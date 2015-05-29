@@ -28,11 +28,11 @@ $obj["price"]= $price;
 if($_POST) //Post Data received from product list page.
 {
 	//Other important variables like tax, shipping cost
-	$TotalTaxAmount 	= 1.00; 
-	$HandalingCost 		= 1.00; 
-	$InsuranceCost 		= 1.00; 
-	$ShippinDiscount 	= 1.00; 
-	$ShippinCost 		= 1.00; 
+	$TotalTaxAmount 	= 0; 
+	$HandalingCost 		= 0; 
+	$InsuranceCost 		= 0; 
+	$ShippinDiscount 	= 0; 
+	$ShippinCost 		= 0; 
 
 	$paypal_data ='';
 	$ItemTotalPrice = 0;
