@@ -284,10 +284,10 @@ $app->post('paypal-express-checkout/process', function(Request $request) use ($a
     return new Response("Checked out");
 });
 
-$app->get('paypal-express-checkout/process_fin', function(Request $request) {
+$app->get('paypal-express-checkout/process_fin', function(Request $request) use ($app) {
     $token = $request->query->get('token');
     $payer_id = $request->query->get('PayerID');
-    finishPayment($token, $payer_id);
+    finishPayment($token, $payer_id, $app['httpClient']);
     return new Response("Done processing payment");
 });
 
