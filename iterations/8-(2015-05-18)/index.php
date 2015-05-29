@@ -66,32 +66,6 @@ $itemProvider = function ($id) use ($app) {
     return new Item($id, $app['httpClient']);
 };
 
-$localDebugging = false;
-if ($localDebugging && !isset($_COOKIE['sessionToken']) && isset($_COOKIE['memberEmail'])) {
-    setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
-    $_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
-    setrawcookie('memberEmail', 'seb@test.com');
-    $_COOKIE['memberEmail'] = 'seb@test.com';
-}
-// check if sessionToken exists
-if(!isset($_COOKIE['sessionToken'])) {
-    header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-    die();
-}
-// check if sessionToken has expired
-else if(!$localDebugging){
-    $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
-    if(empty($res->json())) {
-        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-        die();
-    }
-}
-session_id($_COOKIE['sessionToken']);
-session_start();
-if (!isset($_SESSION['products'])) {
-	$_SESSION['products'] = array();
-}
-
 // API ROUTES AND LOGIC
 
 // TODO: This should probably be api/v2/purchase/deal/member/deal
