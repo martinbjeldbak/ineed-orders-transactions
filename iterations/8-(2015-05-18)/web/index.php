@@ -10,10 +10,12 @@ require_once __DIR__.'/../models/Order.php';
 require_once __DIR__.'/../models/OrderState.php';
 require_once __DIR__.'/../models/Transaction.php';
 require_once __DIR__.'/../models/TransactionState.php';
-//require_once __DIR__.'/../paypal-express-checkout/process.php';
+require_once __DIR__.'/../paypal-express-checkout/process.php';
+require_once __DIR__.'/../paypal-express-checkout/process_fin.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 $app = new Silex\Application();
 
@@ -260,13 +262,22 @@ $app->post('members/{member}/shopping/{vendor}/checkout', function (Request $for
         $total += $item->getPrice() * intval($form->get("item_qty_$i"));
     }
 
-    echo $total;
+    // Send POST to process route right below
+    $subRequest = Request::create('/paypal-express-checkout/process',  'POST', array('total' => $total));
+    return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
 });
 
+$app->post('paypal-express-checkout/process', function(Request $data) {
+    makePayment($data->get('total'));
+    return new Response("Checked out");
+});
 
-
-
-
+$app->get('paypal-express-checkout/process_fin', function(Request $request) {
+    $token = $request->query->get('token');
+    $payer_id = $request->query->get('PayerID');
+    finishPayment($token, $payer_id);
+    return new Response("Done processing payment");
+});
 
 // ERROR RESPONSE
 $app->error(function (\Exception $e, $code) use ($app) {

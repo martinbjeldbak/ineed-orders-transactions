@@ -1,9 +1,6 @@
 <?php
-session_start();
-include_once("../config.php");
 include_once("paypal.class.php");
 
-makePayment(20);
 
 function makePayment($price){
 
@@ -14,9 +11,6 @@ $PayPalApiSignature 	= 'AiPC9BjkCyDFQXbSkoZcgqH3hpacAy6mPRw.LrSVPmwTXbqHPAybey9k
 $PayPalCurrencyCode 	= 'USD'; //Paypal Currency Code
 $PayPalReturnURL 		= 'http://localhost/ineed2/paypal-express-checkout/process.php'; //Point to process.php page
 $PayPalCancelURL 		= 'http://localhost/ineed2/paypal-express-checkout/cancel_url.html'; //Cancel URL if user clicks cancel
-
-include_once("../config.php");
-include_once("paypal.class.php");
 
 $paypalmode = ($PayPalMode=='sandbox') ? '.sandbox' : '';
 
