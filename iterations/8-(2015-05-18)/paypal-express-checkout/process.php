@@ -18,7 +18,7 @@ $obj["price"]= $price;
 
 if($_POST) //Post Data received from product list page.
 {
-	//Other important variables like tax, shipping cost
+    //Other important variables like tax, shipping cost
 	$TotalTaxAmount 	= 0; 
 	$HandalingCost 		= 0; 
 	$InsuranceCost 		= 0; 
@@ -93,9 +93,11 @@ if($_POST) //Post Data received from product list page.
 		//Respond according to message we receive from Paypal
 		if("SUCCESS" == strtoupper($httpParsedResponseAr["ACK"]) || "SUCCESSWITHWARNING" == strtoupper($httpParsedResponseAr["ACK"]))
 		{
+           
 				//Redirect user to PayPal store with Token received.
 			 	$paypalurl ='https://www'.$paypalmode.'.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$httpParsedResponseAr["TOKEN"].'';
 				header('Location: '.$paypalurl);
+				die();
 		}
 		else
 		{
