@@ -4,7 +4,7 @@
 {% block content %}
 
 {% for vendor in vendors %}
-    <a href="/members/{{ member.email }}/shopping/{{ vendor.id }}">{{ vendor.name }} ({{ vendor.id }})</a><br />
+    <a href="/members/shopping/{{ vendor.id }}">{{ vendor.name }} ({{ vendor.id }})</a><br />
 {% endfor %}
 
 {% endblock %}
