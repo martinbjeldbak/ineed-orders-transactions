@@ -4,10 +4,10 @@
 <h1>View cart</h1>
 
 <div>
-    {% if app.session.get('products') %}
+    {% if products|length > 0 %}
         <form id="checkout" method="post" action="checkout"></form>
             <ul>
-                {% for item in app.session.get('products') %}
+                {% for item in products %}
                     {% if item|length > 0 %}
                     <form id="cart_update" method="post" action="cart_update"></form>
                         <li> {{ item.name }}

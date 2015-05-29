@@ -249,12 +249,10 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
 ->convert('vendor', $vendorProvider);
 
 $app->get('members/{member}/shopping/{vendor}/view_cart', function (Member $member, Vendor $vendor) use ($app) {
-    /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
-    $session = $app['session'];
-
     return $app['twig']->render('viewCart.twig', array(
         'member' => $member,
         'vendor' => $vendor,
+        'products' => $_SESSION['products']
     ));
 })
 ->convert('member', $memberProvider)
