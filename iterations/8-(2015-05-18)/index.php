@@ -1,17 +1,17 @@
-<?php
+	<?php
 
 // PLEASE SEE: http://silex.sensiolabs.org/doc/usage.html
 
-require_once __DIR__.'/../vendor/autoload.php';
-require_once __DIR__.'/../models/Member.php';
-require_once __DIR__.'/../models/Vendor.php';
-require_once __DIR__.'/../models/Deal.php';
-require_once __DIR__.'/../models/Order.php';
-require_once __DIR__.'/../models/OrderState.php';
-require_once __DIR__.'/../models/Transaction.php';
-require_once __DIR__.'/../models/TransactionState.php';
-require_once __DIR__.'/../paypal-express-checkout/process.php';
-require_once __DIR__.'/../paypal-express-checkout/process_fin.php';
+require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/models/Member.php';
+require_once __DIR__.'/models/Vendor.php';
+require_once __DIR__.'/models/Deal.php';
+require_once __DIR__.'/models/Order.php';
+require_once __DIR__.'/models/OrderState.php';
+require_once __DIR__.'/models/Transaction.php';
+require_once __DIR__.'/models/TransactionState.php';
+require_once __DIR__.'/paypal-express-checkout/process.php';
+require_once __DIR__.'/paypal-express-checkout/process_fin.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +62,7 @@ $itemProvider = function ($id) use ($app) {
 };
 
 $localDebugging = false;
-if ($localDebugging && !isset($_COOKIE['sessionToken']) && isset($_COOKIE['memberEmail'])) {
+if ($localDebugging && !isset($_COOKIE['sessionToken']) && !isset($_COOKIE['memberEmail'])) {
     setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
     $_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
     setrawcookie('memberEmail', 'seb@test.com');
