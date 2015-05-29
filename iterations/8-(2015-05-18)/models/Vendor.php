@@ -93,7 +93,7 @@ class Vendor implements iNeedModel {
 
     public function updateItems() {
         $items = array();
-        $res = $this->httpClient->get("http://ineedvendors.mybluemix.net/api/vendor/catalog/{$this->id}");
+        $res = $this->httpClient->get("http://ineedvendors052715.mybluemix.net/api/vendor/catalog/{$this->id}");
 
         foreach ($res->json()['products'] as $itemJson)
             array_push($items, new Item($itemJson['id'], $itemJson['description'], $itemJson['name'],
