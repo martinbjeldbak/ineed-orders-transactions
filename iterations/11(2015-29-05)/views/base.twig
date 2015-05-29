@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        <link rel="stylesheet" href="style.css" />
+        <title>{% block title %}{% endblock %} - O&T</title>
+    {% endblock %}
+</head>
+<body>
+<div id="content">{% block content %}{% endblock %}</div>
+<div id="footer">
+    {% block footer %}
+        Created by the Orders & Transactions Team. Problems? Email <a href="mailto:cse210-orders-transactions@googlegroups.com">us</a>.
+    {% endblock %}
+</div>
+</body>
+</html>
