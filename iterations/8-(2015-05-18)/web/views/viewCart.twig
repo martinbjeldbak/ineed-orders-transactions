@@ -21,9 +21,10 @@
                         </li>
                         {% set total = total + (item.price * item.qty) %}
 
-                        <input type="hidden" name="item_name[{{ cart_items_index }}]" value="{{ item.name }}" form="checkout" />
-                        <input type="hidden" name="item_id[{{ cart_items_index }}]" value="{{ item.id }}" form="checkout" />
-                        <input type="hidden" name="item_qty[{{ cart_items_index }}]" value="{{ item.qty }}" form="checkout" />
+                        <input type="hidden" name="item_name_{{ cart_items_index }}" value="{{ item.name }}" form="checkout" />
+                        <input type="hidden" name="item_id_{{ cart_items_index }}"   value="{{ item.id }}"   form="checkout" />
+                        <input type="hidden" name="item_id_{{ cart_items_index }}"   value="{{ item.id }}"   form="checkout" />
+                        <input type="hidden" name="item_qty_{{ cart_items_index }}"  value="{{ item.qty }}"  form="checkout" />
                         {% set cart_items_index = cart_items_index + 1 %}
                     {% endif %}
                 {% endfor %}

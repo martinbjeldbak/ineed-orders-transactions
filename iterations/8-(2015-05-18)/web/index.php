@@ -10,6 +10,7 @@ require_once __DIR__.'/../models/Order.php';
 require_once __DIR__.'/../models/OrderState.php';
 require_once __DIR__.'/../models/Transaction.php';
 require_once __DIR__.'/../models/TransactionState.php';
+//require_once __DIR__.'/../paypal-express-checkout/process.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -251,8 +252,15 @@ $app->get('members/{member}/shopping/{vendor}/view_cart', function (Member $memb
 ->convert('vendor', $vendorProvider);
 
 $app->post('members/{member}/shopping/{vendor}/checkout', function (Request $form) use ($app) {
-    echo "TODO: Process paypal here, see viewCart.twig for information given to us in the form";
-    echo $form->get('num_cart_items');
+    $total = 0.0;
+    // Loop through all items in shopping cart to compute sum
+    for($i = 0; $i < intval($form->get('num_cart_items')); $i++) {
+        /** @var Item $item */
+        $item = new Item($form->get("item_id_$i"), $app['httpClient']);
+        $total += $item->getPrice() * intval($form->get("item_qty_$i"));
+    }
+
+    echo $total;
 });
 
 
