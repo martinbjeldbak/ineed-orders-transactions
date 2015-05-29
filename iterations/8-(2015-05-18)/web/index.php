@@ -58,10 +58,31 @@ $itemProvider = function ($id) use ($app) {
     return new Item($id, $app['httpClient']);
 };
 
-$app->before(function ($request) {
-    $request->getSession()->start();
-});
-
+$localDebugging = false;
+if ($localDebugging && !isset($_COOKIE['sessionToken']) && isset($_COOKIE['memberEmail'])) {
+    setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
+    $_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
+    setrawcookie('memberEmail', 'seb@test.com');
+    $_COOKIE['memberEmail'] = 'seb@test.com';
+}
+// check if sessionToken exists
+if(!isset($_COOKIE['sessionToken'])) {
+    header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
+    die();
+}
+// check if sessionToken has expired
+else if(!$localDebugging){
+    $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
+    if(empty($res->json())) {
+        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
+        die();
+    }
+}
+session_id($_COOKIE['sessionToken']);
+session_start();
+if (!isset($_SESSION['products'])) {
+	$_SESSION['products'] = array();
+}
 
 // API ROUTES AND LOGIC
 
@@ -171,13 +192,13 @@ $app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor
 ->bind('vendorShopping');
 
 $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $member, Vendor $vendor, Request $form) use ($app) {
-    /** @var \Symfony\Component\HttpFoundation\Session\Session $session */
-    $session = $app['session'];
     $item_id = $form->get('id');
 
     // Empty cart
-    if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1)
-        $session->remove('products');
+    if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1) {
+        unset($_SESSION['products']);
+        $_SESSION['products'] = array();
+    }
 
     // Add item to shopping cart
     if(!is_null($form->get('type')) && $form->get('type') == 'add') {
@@ -187,48 +208,36 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
         $product[] = array();
 
         // prepare array for session variable
-        $new_product = array(array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice()));
+        $new_product = array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice());
 
-        if($session->has('products')) { // if we have the session
+        if(!empty($_SESSION['products'])) { // if we have the session
             $found = false;
-
-            foreach ($session->get('products') as $cart_itm) {
+			foreach ($_SESSION['products'] as $key => $cart_itm) {
                 if(empty($cart_itm))
                     continue;
                 if($cart_itm['id'] == $item_id) { // item exists in array, update qty
-                    $product[] = array('name' => $cart_itm['name'],'id' => $cart_itm['id'],
-                        'qty' => $qty, 'price' => $cart_itm['price']);
                     $found = true;
-                }
-                else {
-                    //item doesn't exist in the list, just retrive old info and prepare array for session var
-                    $product[] = array('name' => $cart_itm['name'],'id' => $cart_itm['id'],
-                        'qty' => $cart_itm['qty'], 'price' => $cart_itm['price']);
+                    $foundInd = $key;
                 }
             }
-
             if($found == false) { //we didn't find item in array
-                $session->set('products', array_merge($product, $new_product));
+                array_push($_SESSION['products'], $new_product);
             }
             else {
-                $session->set('products', $product);
+                $_SESSION['products'][$foundInd]['qty'] = $qty;
             }
         }
-        else
-            $session->set('products', $new_product);
+        else {
+           array_push($_SESSION['products'], $new_product);
+        }
     }
 
     // Remove item from shopping cart
-    if(!is_null($form->get('type')) && $form->get('type') == 'remove' && $session->has('products')) {
-        $product[] = array();
-        foreach($session->get('products') as $cart_itm) {
-            if(empty($cart_itm))
-                continue;
-            if($cart_itm['id'] != $item_id) { //item doesn't exist in the list
-                $product[] = array('name' => $cart_itm['name'], 'id' => $cart_itm['code'], 'qty' => $cart_itm['qty'],
-                    'price' => $cart_itm['price']);
+    if(!is_null($form->get('type')) && $form->get('type') == 'remove' && !empty($_SESSION['products'])) {
+        foreach ($_SESSION['products'] as $key => $cart_itm) {
+            if ($cart_itm['id'] == $item_id) {
+                unset($_SESSION['products'][$key]);
             }
-            $session->set('products', $product);
         }
     }
 
