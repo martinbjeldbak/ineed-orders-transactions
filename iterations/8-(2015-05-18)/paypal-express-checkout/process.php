@@ -1,15 +1,13 @@
 <?php
 require_once __DIR__.'/paypal.class.php';
 
-function makePayment($price, $root_uri){
+function makePayment($price, $PayPalReturnURL, $PayPalCancelURL){
 
 $PayPalMode 			= 'sandbox'; // sandbox or live
 $PayPalApiUsername 		= 'ssuryana-facilitator_api1.eng.ucsd.edu'; //PayPal API Username
 $PayPalApiPassword 		= 'LL2VJL7824HSBHSL'; //Paypal API password
 $PayPalApiSignature 	= 'AiPC9BjkCyDFQXbSkoZcgqH3hpacAy6mPRw.LrSVPmwTXbqHPAybey9k'; //Paypal API Signature
 $PayPalCurrencyCode 	= 'USD'; //Paypal Currency Code
-$PayPalReturnURL 		= "http://homestead.app/paypal-express-checkout/process_fin"; //Point to process.php page
-$PayPalCancelURL 		= "http://homestead.app/paypal-express-checkout/cancel_url.html"; //Cancel URL if user clicks cancel
 
 $paypalmode = ($PayPalMode=='sandbox') ? '.sandbox' : '';
 

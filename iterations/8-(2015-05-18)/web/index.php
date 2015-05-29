@@ -267,8 +267,12 @@ $app->post('members/{member}/shopping/{vendor}/checkout', function (Request $for
     return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
 });
 
-$app->post('paypal-express-checkout/process', function(Request $data) {
-    makePayment($data->get('total'));
+$app->post('paypal-express-checkout/process', function(Request $request) use ($app) {
+    echo $request->getBaseUrl();
+
+    makePayment($request->get('total'),
+        $request->getUriForPath('/paypal-express-checkout/process_fin'),
+        $request->getUriForPath('/paypal-express-checkout/process_cancel'));
     return new Response("Checked out");
 });
 
@@ -277,6 +281,11 @@ $app->get('paypal-express-checkout/process_fin', function(Request $request) {
     $payer_id = $request->query->get('PayerID');
     finishPayment($token, $payer_id);
     return new Response("Done processing payment");
+});
+
+$app->get('paypal-express-checkout/process_cancel', function(Request $request) use ($app) {
+    return $app['twig']->render('paymentCancelled.twig', array(
+    ));
 });
 
 // ERROR RESPONSE
