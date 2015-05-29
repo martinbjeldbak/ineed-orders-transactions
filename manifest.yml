@@ -7,4 +7,3 @@ applications:
   domain: mybluemix.net
   instances: 1
   memory: 128M
-
