@@ -5,7 +5,6 @@ if(file_exists(__DIR__.'/../lib/vendor/autoload.php'))
     require_once __DIR__.'/../lib/vendor/autoload.php'; // bluemix...
 else
     require_once __DIR__.'/vendor/autoload.php';
-
 require_once __DIR__.'/models/Member.php';
 require_once __DIR__.'/models/Vendor.php';
 require_once __DIR__.'/models/Deal.php';
@@ -174,33 +173,31 @@ $app->get('/', function() use ($app) {
     return $app['twig']->render('index.twig');
 });
 
-$app->get('members/{member}/shopping', function (Member $member) use ($app) {
+$app->get('members/shopping', function () use ($app) {
 
     return $app['twig']->render('shopping.twig', array(
-        'member' => $member,
+        'member' => new Member($_COOKIE['memberEmail'], $app['httpClient']),
         'vendors' => Vendor::getAllVendors($app['httpClient'])
     ));
-})
-->convert('member', $memberProvider);
+});
 
-$app->get('members/{member}/shopping/{vendor}', function (Member $member, Vendor $vendor) use ($app) {
+$app->get('members/shopping/{vendor}', function (Vendor $vendor) use ($app) {
     //$app['session']->clear();
     //$vendor->updateDeals();
     $vendor->updateItems();
 
     return $app['twig']->render('shoppingVendor.twig', array(
-        'member' => $member,
+        'member' => new Member($_COOKIE['memberEmail'], $app['httpClient']),
         'vendor' => $vendor,
         'products' => $_SESSION['products']
     ));
 })
-->convert('member', $memberProvider)
 ->convert('vendor', $vendorProvider)
 ->bind('vendorShopping');
 
-$app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $member, Vendor $vendor, Request $form) use ($app) {
+$app->post('members/shopping/{vendor}/cart_update', function (Vendor $vendor, Request $form) use ($app) {
+    $member = new Member($_COOKIE['memberEmail'], $app['httpClient']);
     $item_id = $form->get('id');
-
     // Empty cart
     if(!is_null($form->get('emptycart')) && $form->get('emptycart') == 1) {
         unset($_SESSION['products']);
@@ -251,20 +248,18 @@ $app->post('members/{member}/shopping/{vendor}/cart_update', function (Member $m
     // Return to shopping route
     return $app->redirect($app['url_generator']->generate('vendorShopping', array('member' => $member->getEmail(), 'vendor' => $vendor->getID())));
 })
-->convert('member', $memberProvider)
 ->convert('vendor', $vendorProvider);
 
-$app->get('members/{member}/shopping/{vendor}/view_cart', function (Member $member, Vendor $vendor) use ($app) {
+$app->get('members/shopping/{vendor}/view_cart', function (Vendor $vendor) use ($app) {
     return $app['twig']->render('viewCart.twig', array(
-        'member' => $member,
+        'member' => new Member($_COOKIE['memberEmail'], $app['httpClient']),
         'vendor' => $vendor,
         'products' => $_SESSION['products']
     ));
 })
-->convert('member', $memberProvider)
 ->convert('vendor', $vendorProvider);
 
-$app->post('members/{member}/shopping/{vendor}/checkout', function (Request $form) use ($app) {
+$app->post('members/shopping/{vendor}/checkout', function (Request $form) use ($app) {
     $total = 0.0;
     // Loop through all items in shopping cart to compute sum
     for($i = 0; $i < intval($form->get('num_cart_items')); $i++) {
@@ -284,6 +279,7 @@ $app->post('paypal-express-checkout/process', function(Request $request) use ($a
     makePayment($request->get('total'),
         $request->getUriForPath('/paypal-express-checkout/process_fin'),
         $request->getUriForPath('/paypal-express-checkout/process_cancel'));
+		error_log("checking out");
     return new Response("Checked out");
 });
 
