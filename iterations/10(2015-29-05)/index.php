@@ -78,7 +78,7 @@ if(!isset($_COOKIE['sessionToken'])) {
 // check if sessionToken has expired
 else if(!$localDebugging){
     $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
-    if(empty($res->json())) {
+    if(count($res->json()) == 0) {
         header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
         die();
     }
@@ -214,10 +214,10 @@ $app->post('members/shopping/{vendor}/cart_update', function (Vendor $vendor, Re
         // prepare array for session variable
         $new_product = array('name' => $item->getName(), 'id' => $item->getID(), 'qty' => $qty, 'price' => $item->getPrice(), 'vendorId' => $vendor->getID());
 
-        if(!empty($_SESSION['products'])) { // if we have the session
+        if(count($_SESSION['products']) != 0) { // if we have the session
             $found = false;
 			foreach ($_SESSION['products'] as $key => $cart_itm) {
-                if(empty($cart_itm))
+                if(count($cart_itm) == 0)
                     continue;
                 if($cart_itm['id'] == $item_id) { // item exists in array, update qty
                     $found = true;
