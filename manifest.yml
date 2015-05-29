@@ -1,0 +1,10 @@
+applications:
+- disk_quota: 1024M
+  buildpack: php_buildpack
+  host: ot
+  name: OT
+  path: ./iterations/8-\(2015-05-18\)/
+  domain: mybluemix.net
+  instances: 1
+  memory: 128M
+
