@@ -107,8 +107,18 @@ class Transaction implements iNeedModel {
         $transactionJson = $res->json();
         $this->id = $transactionJson['_id'];
         TransactionState::setState($this, TransactionState::$orderPlaced);
+	$this->notifyVendor();	
         $this->created = True;
     }
+
+	/**
+	* Notifies Vendor About the transaction
+	*/
+     private function notifyVendor(){
+		$vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId=".$this->vendor."&transactionId=".$this->id."&message=please";
+		error_log($vendorApiURL);
+		$this->httpClient->get($vendorApiURL);
+	}	
 
     /**
      * Updates the state of this transaction
