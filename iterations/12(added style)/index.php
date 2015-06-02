@@ -98,7 +98,7 @@ $app->get('api/v1/purchase/{member}/{deal}', function (Member $member, Deal $dea
     $order = new Order('seb/mar testing', $member, $deal->getPrice(), 0, $app['httpClient']);
     $order->addTransaction($deal, 1/*quantity*/);
     $order->placeOrder();
-    return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
+    return $app->json(array('orderId' => $order->getID()));
 })
 ->convert('member', $memberProvider)
 ->convert('deal',   $dealProvider);
@@ -108,7 +108,7 @@ $app->get('api/v1/purchase/item/{member}/{item}', function (Member $member, Item
     $order = new Order('seb/mar testing', $member, $item->getPrice(), 0, $app['httpClient']);
     $order->addTransaction($item, $item->getVendor(), 1);
     $order->placeOrder();
-    return $app->json(array('transactionId' => $order->getTransactions()[0]->getID()));
+    return $app->json(array('orderId' => $order->getID()));
 })
 ->convert('member', $memberProvider)
 ->convert('vendor', $vendorProvider)

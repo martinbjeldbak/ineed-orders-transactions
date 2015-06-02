@@ -52,7 +52,6 @@ function finishPayment($token, $payer_id,$httpClient) {
     {
 
         echo '<h2>Success</h2>';
-        echo 'Your Transaction ID : '.urldecode($httpParsedResponseAr["PAYMENTINFO_0_TRANSACTIONID"]);
 
         /*
         //Sometimes Payment are kept pending even when transaction is complete.
@@ -87,7 +86,8 @@ function finishPayment($token, $payer_id,$httpClient) {
                     $qty = $product["qty"];
                     $order->addTransaction($item, $item->getVendor(),$qty);	
             }
-            $order->placeOrder();				
+            $order->placeOrder();
+            echo '<div>Your Order ID : '.$order->getID().'</div>';
             /*
             #### SAVE BUYER INFORMATION IN DATABASE ###
             //see (http://www.sanwebe.com/2013/03/basic-php-mysqli-usage) for mysqli usage
