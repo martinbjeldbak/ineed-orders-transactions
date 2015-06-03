@@ -91,7 +91,6 @@ $sessionCheck = function () use ($app) {
 		}
 		session_start();
 	}
-        echo 'hello';
 };
 
 // API ROUTES AND LOGIC
