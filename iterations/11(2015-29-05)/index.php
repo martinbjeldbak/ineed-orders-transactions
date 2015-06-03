@@ -14,11 +14,11 @@ require_once __DIR__.'/models/TransactionState.php';
 require_once __DIR__.'/paypal-express-checkout/process.php';
 require_once __DIR__.'/paypal-express-checkout/process_fin.php';
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
+    use Symfony\Component\HttpFoundation\Request;
+    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-$app = new Silex\Application();
+    $app = new Silex\Application();
 
 $app['debug'] = false;
 
@@ -63,32 +63,31 @@ $itemProvider = function ($id) use ($app) {
 };
 
 $sessionCheck = function () use ($app) {
-	$localDebugging = false;
-	if ($localDebugging && !isset($_COOKIE['sessionToken']) && !isset($_COOKIE['memberEmail'])) {
-		setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
-		$_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
-		setrawcookie('memberEmail', 'seb@test.com');
-		$_COOKIE['memberEmail'] = 'seb@test.com';
-	}
-	// check if sessionToken exists
-	if(!isset($_COOKIE['sessionToken'])) {
-		header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
-		die();
-	}
-	// check if sessionToken has expired
-	else if(!$localDebugging){
-		$res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
-		if($res->json() ==null || !is_array ($res->json()) || count($res->json()) ==0 ) {
-			header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
-			die();
-		}
-	}
-	
-        session_id($_COOKIE['sessionToken']);
-        session_start();
-        if (!isset($_SESSION['products'])) {
-                $_SESSION['products'] = array();
+    $localDebugging = false;
+    if($localDebugging) {
+        setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
+        $_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
+        setrawcookie('memberEmail', 'seb@test.com');
+        $_COOKIE['memberEmail'] = 'seb@test.com';
+    }
+
+    if(isset($_COOKIE['sessionToken'])) {
+        $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
+        if($res->getStatusCode() != 200) {
+            header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
+            die();
         }
+
+        if (!isset($_SESSION['products'])) {
+            $_SESSION['products'] = array();
+        }
+        //session_id($_COOKIE['sessionToken']);
+    }
+    else {
+        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
+        die();
+    }
+    session_start();
 };
 
 // API ROUTES AND LOGIC
@@ -172,7 +171,10 @@ $app->get('api/v1/vendors/transactions/deals', function () use ($app) {
 
 // VIEW ROUTES AND LOGIC
 $app->get('/', function() use ($app) {
-    return $app['twig']->render('index.twig');
+    $_COOKIE['sessionToken'] = 'asdf';
+    return $app['twig']->render('index.twig', array(
+        'sessionToken' => $_COOKIE['sessionToken']
+    ));
 });
 
 $app->get('members/shopping', function () use ($app) {
@@ -288,16 +290,14 @@ $app->post('paypal-express-checkout/process', function(Request $request) use ($a
        	'http://orders.mybluemix.net/paypal-express-checkout/process_cancel');
 		error_log("checking out");
     return new Response("Checked out");
-})
-->before($sessionCheck);
+});
 
 $app->get('paypal-express-checkout/process_fin', function(Request $request) use ($app) {
     $token = $request->query->get('token');
     $payer_id = $request->query->get('PayerID');
     finishPayment($token, $payer_id, $app['httpClient']);
     return new Response("Done processing payment");
-})
-->before($sessionCheck);
+});
 
 $app->get('paypal-express-checkout/process_cancel', function(Request $request) use ($app) {
     return $app['twig']->render('paymentCancelled.twig', array(

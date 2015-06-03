@@ -98,7 +98,7 @@ if($_POST) //Post Data received from product list page.
 				//Redirect user to PayPal store with Token received.
 			 	$paypalurl ='https://www'.$paypalmode.'.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token='.$httpParsedResponseAr["TOKEN"].'';
 				header('Location: '.$paypalurl);
-                                die();
+                die();
 		}
 		else
 		{
