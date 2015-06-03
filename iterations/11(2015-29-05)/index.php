@@ -63,32 +63,36 @@ $itemProvider = function ($id) use ($app) {
     return new Item($id, $app['httpClient']);
 };
 
-$localDebugging = false;
-if ($localDebugging && !isset($_COOKIE['sessionToken']) && !isset($_COOKIE['memberEmail'])) {
-    setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
-    $_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
-    setrawcookie('memberEmail', 'seb@test.com');
-    $_COOKIE['memberEmail'] = 'seb@test.com';
-}
-// check if sessionToken exists
-if(!isset($_COOKIE['sessionToken'])) {
-    header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-    die();
-}
-// check if sessionToken has expired
-else if(!$localDebugging){
-    $res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
-if($res->json() ==null || !is_array ($res->json()) || count($res->json()) ==0 ) {
-	
-        header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net");
-        die();
-    }
-}
-session_id($_COOKIE['sessionToken']);
-session_start();
-if (!isset($_SESSION['products'])) {
-	$_SESSION['products'] = array();
-}
+$sessionCheck = function () use ($app) {
+	$localDebugging = false;
+	if ($localDebugging && !isset($_COOKIE['sessionToken']) && !isset($_COOKIE['memberEmail'])) {
+		setrawcookie('sessionToken', 'fc84ade4-7914-4796-8830-d763896aa136');
+		$_COOKIE['sessionToken'] = 'fc84ade4-7914-4796-8830-d763896aa136';
+		setrawcookie('memberEmail', 'seb@test.com');
+		$_COOKIE['memberEmail'] = 'seb@test.com';
+	}
+	// check if sessionToken exists
+	if(!isset($_COOKIE['sessionToken'])) {
+		header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
+		die();
+	}
+	// check if sessionToken has expired
+	else if(!$localDebugging){
+		$res = $app['httpClient']->get("https://ineed-db.mybluemix.net/api/sessions?sessionToken={$_COOKIE['sessionToken']}");
+		if($res->json() ==null || !is_array ($res->json()) || count($res->json()) ==0 ) {
+			header("Location: http://ineed-members.mybluemix.net/auth?redirectUrl=http%3A%2F%2Forders.mybluemix.net%2Fmembers%2Fshopping");
+			die();
+		}
+	}
+	if(session_id() == '' || !isset($_SESSION)) { // session isn't started
+		session_id($_COOKIE['sessionToken']);
+		if (!isset($_SESSION['products'])) {
+			$_SESSION['products'] = array();
+		}
+		session_start();
+	}
+        echo 'hello';
+};
 
 // API ROUTES AND LOGIC
 
@@ -180,7 +184,8 @@ $app->get('members/shopping', function () use ($app) {
         'member' => new Member($_COOKIE['memberEmail'], $app['httpClient']),
         'vendors' => Vendor::getAllVendors($app['httpClient'])
     ));
-});
+})
+->convert('session', $sessionCheck);
 
 $app->get('members/shopping/{vendor}', function (Vendor $vendor) use ($app) {
     //$app['session']->clear();
