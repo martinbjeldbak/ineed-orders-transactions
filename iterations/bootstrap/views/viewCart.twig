@@ -1,0 +1,118 @@
+{% extends 'base.twig' %}
+
+{% set total = 0 %}
+{% set cart_items_index = 0 %}
+
+{% block title %}View cart{% endblock %}
+
+{% block content %}
+
+		<div class="page-title" style="background-image: url('/images/background01.jpg');">
+			<div class="inner">
+				<div class="container">
+					<div class="row aligned-cols">
+						<div class="col-sm-3 aligned-middle">
+							<h2>View cart </h2>
+						</div> <!-- end .col-sm-3 -->
+						<div class="col-sm-9">
+						</div> <!-- end .col-sm-9 -->
+					</div> <!-- end .row -->
+				</div> <!-- end .container -->
+			</div> <!-- end .inner -->
+		</div> <!-- end .page-title -->
+
+
+<div class="section white">
+	<div class="inner">
+		<div class="container">
+			<div class="table-responsive">
+				<div class="shopping-cart">
+					{% if products|length > 0 %}
+					<table class="table cart">
+						<thead>
+							<th> Product Name </th>
+							<th class="text-center">Price</th>
+							<th class="text-center">Quantity</th>
+							<th class="text-center">Total</th>
+							<th class="text-right">Remove From Cart</th>
+						</thead>
+
+							<form id="checkout" method="post" action="checkout"></form>
+								<tbody>
+									{% for item in products %}
+										{% if item|length > 0 %}
+										<form id="cart_update" method="post" action="cart_update"></form>
+										
+										<tr>
+											<td class="text-center"><img src="/images/cart.jpg">{{ item.name }}</td>
+											<td class="text-center">{{ item.price }}</td>
+											<td class="text-center">{{ item.qty }}</td>
+											<td class="text-center">{{ (item.price * item.qty) }}</td>
+											<td class="text-right">
+												<div>
+														<input type="hidden" name="type" value="remove" form="cart_update"/>
+														<input type="hidden" name="id" value="{{ item.id }}" form="cart_update" />
+														<input type="submit" class="remove" value="&times;" form="cart_update" />
+												</div>
+											</td>
+										</tr>
+											{% set total = total + (item.price * item.qty) %}
+
+											<input type="hidden" name="item_name_{{ cart_items_index }}" value="{{ item.name }}" form="checkout" />
+											<input type="hidden" name="item_id_{{ cart_items_index }}"   value="{{ item.id }}"   form="checkout" />
+											<input type="hidden" name="item_id_{{ cart_items_index }}"   value="{{ item.id }}"   form="checkout" />
+											<input type="hidden" name="item_qty_{{ cart_items_index }}"  value="{{ item.qty }}"  form="checkout" />
+											{% set cart_items_index = cart_items_index + 1 %}
+										{% endif %}
+									{% endfor %}
+								</tbody>
+					</table>
+				</div>
+			</div> <!-- end .table-responsive -->
+		</div> <!-- end .container -->
+	</div> <!-- end .inner -->
+</div> <!-- end .section -->
+
+		<div class="section dark transparent parallax" style="background-image: url('/images/background02.jpg');">
+			<div class="inner">
+				<div class="container">
+						<div class="row aligned-cols">
+							<div class="col-sm-4 aligned-middle">
+								<div class="row">
+									<div class="col-xs-6 text-right"><h2>Total:</h2></div>
+									<div class="col-xs-6"><h2>${{ total }}</h2></div>
+								</div>
+							</div> <!-- end .col-sm-4 -->
+							<div class="column-spacer"></div>
+							<div class="col-sm-2 aligned-middle text-right">
+								<p>
+									<input type="hidden" name="num_cart_items" value="{{ cart_items_index }}" form="checkout" />
+									<input type="submit" class="button brown" value="Pay now" form="checkout"/>
+								</p>	
+							</div> <!-- end .col-sm-2 -->
+						</div> <!-- end .row -->
+				</div> <!-- end .container -->
+			</div> <!-- end .inner -->
+		</div> <!-- end .section -->
+		
+
+						{% else %}
+							<h2>Your cart is empty!</h2>
+				</div>
+			</div> <!-- end .table-responsive -->
+		</div> <!-- end .container -->
+	</div> <!-- end .inner -->
+</div> <!-- end .section -->
+						{% endif %}
+
+		<div class="section small text-center dark transparent parallax" style="background-image: url('/images/background02.jpg');">
+			<div class="inner">
+				<div class="container">
+					<div class="call-to-action">
+						<h3>Thank you</h3>
+					</div> <!-- end .call-to-action -->
+				</div> <!-- end .container -->
+			</div> <!-- end .inner -->
+		</div> <!-- end .section -->
+
+{% endblock %}
