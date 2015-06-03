@@ -1,5 +1,4 @@
 	<?php
-ini_set("session.auto_start",0);
 // PLEASE SEE: http://silex.sensiolabs.org/doc/usage.html
 if(file_exists(__DIR__.'/../lib/vendor/autoload.php'))
     require_once __DIR__.'/../lib/vendor/autoload.php'; // bluemix...
@@ -84,13 +83,13 @@ $sessionCheck = function () use ($app) {
 			die();
 		}
 	}
-	if(session_id() == '' || !isset($_SESSION)) { // session isn't started
-		session_id($_COOKIE['sessionToken']);
-		if (!isset($_SESSION['products'])) {
-			$_SESSION['products'] = array();
-		}
-		session_start();
-	}
+	
+        session_id($_COOKIE['sessionToken']);
+        if (!isset($_SESSION['products'])) {
+                $_SESSION['products'] = array();
+        }
+        session_start();
+	
 };
 
 // API ROUTES AND LOGIC
@@ -184,7 +183,7 @@ $app->get('members/shopping', function () use ($app) {
         'vendors' => Vendor::getAllVendors($app['httpClient'])
     ));
 })
-->convert('session', $sessionCheck);
+->before($sessionCheck);
 
 $app->get('members/shopping/{vendor}', function (Vendor $vendor) use ($app) {
     //$app['session']->clear();
@@ -198,6 +197,7 @@ $app->get('members/shopping/{vendor}', function (Vendor $vendor) use ($app) {
     ));
 })
 ->convert('vendor', $vendorProvider)
+->before($sessionCheck)
 ->bind('vendorShopping');
 
 $app->post('members/shopping/{vendor}/cart_update', function (Vendor $vendor, Request $form) use ($app) {
@@ -253,7 +253,8 @@ $app->post('members/shopping/{vendor}/cart_update', function (Vendor $vendor, Re
     // Return to shopping route
     return $app->redirect($app['url_generator']->generate('vendorShopping', array('member' => $member->getEmail(), 'vendor' => $vendor->getID())));
 })
-->convert('vendor', $vendorProvider);
+->convert('vendor', $vendorProvider)
+->before($sessionCheck);
 
 $app->get('members/shopping/{vendor}/view_cart', function (Vendor $vendor) use ($app) {
     return $app['twig']->render('viewCart.twig', array(
@@ -262,7 +263,8 @@ $app->get('members/shopping/{vendor}/view_cart', function (Vendor $vendor) use (
         'products' => $_SESSION['products']
     ));
 })
-->convert('vendor', $vendorProvider);
+->convert('vendor', $vendorProvider)
+->before($sessionCheck);
 
 $app->post('members/shopping/{vendor}/checkout', function (Request $form) use ($app) {
     $total = 0.0;
@@ -276,7 +278,8 @@ $app->post('members/shopping/{vendor}/checkout', function (Request $form) use ($
     // Send POST to process route right below
     $subRequest = Request::create('/paypal-express-checkout/process',  'POST', array('total' => $total));
     return $app->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
-});
+})
+->before($sessionCheck);
 
 $app->post('paypal-express-checkout/process', function(Request $request) use ($app) {
     echo $request->getBaseUrl();
@@ -286,7 +289,8 @@ $app->post('paypal-express-checkout/process', function(Request $request) use ($a
        	'http://orders.mybluemix.net/paypal-express-checkout/process_cancel');
 		error_log("checking out");
     return new Response("Checked out");
-});
+})
+->before($sessionCheck);
 
 $app->get('paypal-express-checkout/process_fin', function(Request $request) use ($app) {
     $token = $request->query->get('token');
@@ -298,7 +302,8 @@ $app->get('paypal-express-checkout/process_fin', function(Request $request) use 
 $app->get('paypal-express-checkout/process_cancel', function(Request $request) use ($app) {
     return $app['twig']->render('paymentCancelled.twig', array(
     ));
-});
+})
+->before($sessionCheck);
 
 // ERROR RESPONSE
 $app->error(function (\Exception $e, $code) use ($app) {
