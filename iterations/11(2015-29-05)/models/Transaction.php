@@ -93,6 +93,7 @@ class Transaction implements iNeedModel {
      * Instantiate this instance of the transaction in the db
      */
     public function createinDB() {
+	error_log("creating DB *****");
         if($this->created) // Don't create a new transaction if this instance already has been created
             return;
 
@@ -116,7 +117,7 @@ class Transaction implements iNeedModel {
 	* Notifies Vendor About the transaction
 	*/
      private function notifyVendor(){
-		$vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId=".$this->vendor."&transactionId=".$this->id."&message=please";
+		$vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId=".$this->vendor->getId()."&transactionId=".$this->id."&message=please";
 		error_log($vendorApiURL);
 		$res= $this->httpClient->get($vendorApiURL);
 		error_log("notfify vendor ***************** ".print_r($res,true));
