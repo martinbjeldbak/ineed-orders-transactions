@@ -117,7 +117,8 @@ class Transaction implements iNeedModel {
      private function notifyVendor(){
 		$vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId=".$this->vendor."&transactionId=".$this->id."&message=please";
 		error_log($vendorApiURL);
-		$this->httpClient->get($vendorApiURL);
+		$res= $this->httpClient->get($vendorApiURL);
+		error_log("notfify vendor ***************** ".print_r($res,true));
 	}	
 
     /**
