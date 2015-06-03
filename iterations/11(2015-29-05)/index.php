@@ -85,11 +85,10 @@ $sessionCheck = function () use ($app) {
 	}
 	
         session_id($_COOKIE['sessionToken']);
+        session_start();
         if (!isset($_SESSION['products'])) {
                 $_SESSION['products'] = array();
         }
-        session_start();
-	
 };
 
 // API ROUTES AND LOGIC
