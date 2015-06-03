@@ -52,7 +52,7 @@ function finishPayment($token, $payer_id,$httpClient) {
     {
 
         echo '<h2>Success</h2>';
-        echo 'Your Transaction ID : '.urldecode($httpParsedResponseAr["PAYMENTINFO_0_TRANSACTIONID"]);
+
         /*
         //Sometimes Payment are kept pending even when transaction is complete.
         //hence we need to notify user about it and ask him manually approve the transiction
@@ -67,9 +67,6 @@ function finishPayment($token, $payer_id,$httpClient) {
             echo '<div style="color:red">Transaction Complete, but payment is still pending! '.
                 'You need to manually authorize this payment in your <a target="_new" href="http://www.paypal.com">Paypal Account</a></div>';
         }
-	echo '<a href="http://orders.mybluemix.net/members/shopping">
-	   <button>Get Back to Shopping</button>
-	</a>';
         // we can retrive transection details using either GetTransactionDetails or GetExpressCheckoutDetails
         // GetTransactionDetails requires a Transaction ID, and GetExpressCheckoutDetails requires Token returned by SetExpressCheckOut
         $padata = 	'&TOKEN='.urlencode($token);
@@ -89,6 +86,8 @@ function finishPayment($token, $payer_id,$httpClient) {
                     $order->addTransaction($item, $item->getVendor(),$qty);	
             }
             $order->placeOrder();				
+			echo '<div>Your Order ID : '.$order->getID().'</div>';
+			echo '<a href="http://orders.mybluemix.net/members/shopping"><button>Get Back to Shopping</button></a>';
             /*
             #### SAVE BUYER INFORMATION IN DATABASE ###
             //see (http://www.sanwebe.com/2013/03/basic-php-mysqli-usage) for mysqli usage
