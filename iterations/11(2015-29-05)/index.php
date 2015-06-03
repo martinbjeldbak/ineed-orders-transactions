@@ -14,11 +14,11 @@ require_once __DIR__.'/models/TransactionState.php';
 require_once __DIR__.'/paypal-express-checkout/process.php';
 require_once __DIR__.'/paypal-express-checkout/process_fin.php';
 
-    use Symfony\Component\HttpFoundation\Request;
-    use Symfony\Component\HttpFoundation\Response;
-    use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-    $app = new Silex\Application();
+$app = new Silex\Application();
 
 $app['debug'] = false;
 
