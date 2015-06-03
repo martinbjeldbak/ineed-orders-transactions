@@ -296,7 +296,8 @@ $app->get('paypal-express-checkout/process_fin', function(Request $request) use 
     $payer_id = $request->query->get('PayerID');
     finishPayment($token, $payer_id, $app['httpClient']);
     return new Response("Done processing payment");
-});
+})
+->before($sessionCheck);
 
 $app->get('paypal-express-checkout/process_cancel', function(Request $request) use ($app) {
     return $app['twig']->render('paymentCancelled.twig', array(
