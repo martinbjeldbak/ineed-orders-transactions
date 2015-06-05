@@ -109,7 +109,8 @@ class Transaction implements iNeedModel {
         $transactionJson = $res->json();
         $this->id = $transactionJson['_id'];
         TransactionState::setState($this, TransactionState::$orderPlaced);
-	$this->notifyVendor();	
+
+	    $this->notifyVendor();
         $this->created = True;
     }
 
@@ -117,10 +118,26 @@ class Transaction implements iNeedModel {
 	* Notifies Vendor About the transaction
 	*/
      private function notifyVendor(){
-		$vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId=".$this->vendor->getId()."&transactionId=".$this->id."&message=please";
-		error_log($vendorApiURL);
-		$res= $this->httpClient->get($vendorApiURL);
-		error_log("notfify vendor ***************** ".print_r($res,true));
+         $message  = "";
+         $message .= "Order From: {$this->getMember()->getEmail()}\n";
+         $message .= "Order Number: {$this->getOrder()->getID()}\n";
+
+         /** @var Item $item */
+         foreach($this->getItems() as $item)
+             $message .= "Item: {$item->getName()} (ID: {$item->getID()}) Qty: {$item->getQuantity()} Price: {$item->getPrice()}\n";
+
+         $message .= "Total Price: {$this->mediator->updateTotal()}\n";
+
+         $message = rawurlencode($message);
+         $vendorApiURL = "http://pyneed.mybluemix.net/api/vendor/notify?vendorId={$this->vendor->getId()}&transactionId={$this->id}&message={$message}\n";
+
+         //error_log("Sending GET to vendor URL:");
+         //error_log($vendorApiURL);
+
+         $this->httpClient->get($vendorApiURL);
+
+		 //$res= $this->httpClient->get($vendorApiURL);
+		 //error_log("notfify vendor ***************** ".print_r($res,true));
 	}	
 
     /**
@@ -159,6 +176,7 @@ class Transaction implements iNeedModel {
      * @param $transactionJson array This is the transaction info returned as JSON
      * @param \GuzzleHttp\Client $httpClient
      * @return null|Transaction
+     * @throws Exception
      */
     private static function createFromJson($transactionJson, \GuzzleHttp\Client $httpClient) {
         $order = Order::getOrderFromId($transactionJson['orderId'], $httpClient);
